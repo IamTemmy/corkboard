@@ -14,13 +14,15 @@ const navLinks = [
 export function Nav() {
   return (
     <nav className="flex items-center justify-between border-b border-line bg-paper-soft px-6 py-5 sm:px-12">
-      {/* Wordmark links home, as every site's logo should */}
-      <Link
+      {/* Wordmark links home. A plain <a> (not next/link) forces a full page
+          load, which resets any active search/filter — so clicking it is a
+          reliable "back to a fresh homepage", even when you're already on it. */}
+      <a
         href="/"
         className="font-display text-[22px] font-semibold tracking-[-0.01em]"
       >
         cork<span className="text-marigold">board</span>
-      </Link>
+      </a>
 
       {/* Center links — hidden on small screens to keep the mobile header clean */}
       <div className="hidden items-center gap-8 text-sm font-medium sm:flex">

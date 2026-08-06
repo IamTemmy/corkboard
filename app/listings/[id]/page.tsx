@@ -79,13 +79,19 @@ export default async function ListingPage({ params }: ListingPageProps) {
               )}
             </div>
 
-            {/* Placeholder CTA — contact/messaging isn't built yet */}
-            <Button className="h-auto w-full rounded-lg px-5 py-3 text-sm font-semibold sm:w-auto">
+            {/* Contact isn't built yet (needs the backend), so mark it clearly */}
+            <Button
+              title="Seller contact is coming soon"
+              className="h-auto w-full rounded-lg px-5 py-3 text-sm font-semibold sm:w-auto"
+            >
               Contact seller
+              <span className="ml-2 rounded-full bg-paper/20 px-2 py-0.5 text-[10px] font-semibold uppercase tracking-[0.06em]">
+                Soon
+              </span>
             </Button>
             <p className="mt-3 max-w-sm text-xs text-ink/55">
-              Sellers arrange meetups over Instagram or GroupMe. Always meet in a
-              public campus location.
+              Once this is live, sellers will share an Instagram or GroupMe handle
+              to arrange a meetup. Always meet in a public campus location.
             </p>
           </div>
         </div>

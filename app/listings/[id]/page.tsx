@@ -3,7 +3,13 @@ import { notFound } from "next/navigation";
 import { Button } from "@/components/ui/button";
 import { Nav } from "@/components/site/nav";
 import { Footer } from "@/components/site/footer";
-import { formatPrice, getListingById, listings } from "@/lib/listings";
+import {
+  describeContact,
+  formatPostedAt,
+  formatPrice,
+  getListingById,
+  listings,
+} from "@/lib/listings";
 
 // `params` for a dynamic route arrives as a Promise in the App Router.
 type ListingPageProps = {
@@ -11,7 +17,6 @@ type ListingPageProps = {
 };
 
 // Pre-build a static page for every listing at build time (one per id).
-// Because our data is fixed, all 8 detail pages are generated up front.
 export function generateStaticParams() {
   return listings.map((listing) => ({ id: listing.id }));
 }
@@ -35,6 +40,8 @@ export default async function ListingPage({ params }: ListingPageProps) {
   // No matching listing → render Next's 404 page.
   if (!listing) notFound();
 
+  const isAvailable = listing.status === "available";
+
   return (
     <>
       <Nav />
@@ -52,47 +59,93 @@ export default async function ListingPage({ params }: ListingPageProps) {
             <span className="absolute left-3 top-3 z-10 flex size-[22px] items-center justify-center rounded-full bg-brick shadow-[0_2px_4px_rgba(0,0,0,0.2)]">
               <span className="size-1.5 rounded-full bg-paper-soft" />
             </span>
-            <div
-              className="flex aspect-[4/3] items-center justify-center text-[13px] font-medium text-ink/35"
-              style={{ background: "linear-gradient(135deg, #DCD3BE, #EDE6D6)" }}
-            >
-              Photo
+            <div className={`aspect-[4/3] w-full ${isAvailable ? "" : "opacity-60"}`}>
+              {listing.imageUrl ? (
+                // eslint-disable-next-line @next/next/no-img-element
+                <img
+                  src={listing.imageUrl}
+                  alt={listing.title}
+                  className="h-full w-full object-cover"
+                />
+              ) : (
+                <div
+                  className="flex h-full w-full items-center justify-center text-[13px] font-medium text-ink/35"
+                  style={{ background: "linear-gradient(135deg, #DCD3BE, #EDE6D6)" }}
+                >
+                  Photo
+                </div>
+              )}
             </div>
           </div>
 
           {/* Details */}
           <div className="flex flex-col">
+            {!isAvailable && (
+              <span className="mb-3 w-fit rounded-full bg-ink px-3 py-1 text-[10px] font-semibold uppercase tracking-[0.06em] text-paper">
+                {listing.status === "sold" ? "Sold" : "Reserved"}
+              </span>
+            )}
+
             <p className="mb-2 text-xs uppercase tracking-[0.06em] text-ink/55">
               {listing.category} · {listing.condition}
             </p>
             <h1 className="font-display mb-3 text-[32px] font-semibold leading-tight tracking-[-0.01em]">
               {listing.title}
             </h1>
-            <div className="mb-6 flex items-center gap-3">
+
+            <div className="mb-5 flex items-center gap-3">
               <span className="font-mono text-2xl font-medium">
                 {formatPrice(listing.price)}
               </span>
-              {listing.verified && (
-                <span className="text-[10px] font-semibold uppercase tracking-[0.04em] text-moss">
-                  ● Verified
-                </span>
-              )}
+              <span className="text-xs text-ink/50">
+                Posted {formatPostedAt(listing.postedAt)}
+              </span>
             </div>
 
-            {/* Contact isn't built yet (needs the backend), so mark it clearly */}
-            <Button
-              title="Seller contact is coming soon"
-              className="h-auto w-full rounded-lg px-5 py-3 text-sm font-semibold sm:w-auto"
-            >
-              Contact seller
-              <span className="ml-2 rounded-full bg-paper/20 px-2 py-0.5 text-[10px] font-semibold uppercase tracking-[0.06em]">
-                Soon
-              </span>
-            </Button>
-            <p className="mt-3 max-w-sm text-xs text-ink/55">
-              Once this is live, sellers will share an Instagram or GroupMe handle
-              to arrange a meetup. Always meet in a public campus location.
+            <p className="text-sm leading-relaxed text-ink/70">
+              {listing.description}
             </p>
+
+            {/* Meet-at — the on-campus exchange spot, in the pin colour */}
+            <div className="mt-6 flex items-center gap-3 rounded-[12px] border border-line bg-paper-soft px-4 py-3">
+              <span className="flex size-7 shrink-0 items-center justify-center rounded-full bg-brick">
+                <span className="size-2 rounded-full bg-paper-soft" />
+              </span>
+              <div>
+                <p className="text-[11px] uppercase tracking-[0.06em] text-ink/55">
+                  Meet at
+                </p>
+                <p className="text-sm font-semibold">{listing.meetupSpot}</p>
+              </div>
+            </div>
+
+            <p className="mt-4 text-xs text-ink/55">
+              Listed by {listing.seller} · {listing.campus}
+            </p>
+
+            {isAvailable ? (
+              <div className="mt-6">
+                <Button
+                  title="Seller contact is coming soon"
+                  className="h-auto w-full rounded-lg px-5 py-3 text-sm font-semibold sm:w-auto"
+                >
+                  Contact seller
+                  <span className="ml-2 rounded-full bg-paper/20 px-2 py-0.5 text-[10px] font-semibold uppercase tracking-[0.06em]">
+                    Soon
+                  </span>
+                </Button>
+                <p className="mt-3 max-w-md text-xs text-ink/55">
+                  When accounts launch, verified students can reach {listing.seller}{" "}
+                  over {describeContact(listing.contact)} to agree on a time. Always
+                  meet at the campus spot above, in daylight — and it&apos;s fine to
+                  bring a friend.
+                </p>
+              </div>
+            ) : (
+              <p className="mt-6 rounded-[12px] border border-dashed border-line px-4 py-4 text-sm text-ink/60">
+                This item is {listing.status} and is no longer available.
+              </p>
+            )}
           </div>
         </div>
       </main>

@@ -1,6 +1,8 @@
-// Static category filters. The "All" chip is shown active to match the mockup;
-// making these actually filter the grid is a planned next step.
-const categories = [
+"use client";
+
+// The full set of category filters. Exported so the parent (Marketplace)
+// and this component agree on the same list.
+export const categories = [
   "All",
   "Electronics",
   "Clothing",
@@ -10,23 +12,33 @@ const categories = [
   "Free",
 ];
 
-export function CategoryChips() {
+type CategoryChipsProps = {
+  /** The currently selected category (controlled by the parent). */
+  selected: string;
+  /** Called with the new category when a chip is clicked. */
+  onSelect: (category: string) => void;
+};
+
+export function CategoryChips({ selected, onSelect }: CategoryChipsProps) {
   return (
     <div className="flex flex-wrap justify-center gap-2.5 px-6 pb-2 pt-6 sm:px-12">
       {categories.map((category) => {
-        const isActive = category === "All";
+        const isActive = category === selected;
         return (
-          <span
+          <button
             key={category}
+            type="button"
+            onClick={() => onSelect(category)}
+            aria-pressed={isActive}
             className={
-              "rounded-full border px-4 py-2 text-[13px] font-medium " +
+              "cursor-pointer rounded-full border px-4 py-2 text-[13px] font-medium transition-colors " +
               (isActive
                 ? "border-ink bg-ink text-paper"
-                : "border-line bg-paper-soft text-ink/80")
+                : "border-line bg-paper-soft text-ink/80 hover:border-ink/30")
             }
           >
             {category}
-          </span>
+          </button>
         );
       })}
     </div>

@@ -1,7 +1,6 @@
 import { Nav } from "@/components/site/nav";
 import { Hero } from "@/components/site/hero";
-import { CategoryChips } from "@/components/site/category-chips";
-import { ListingGrid } from "@/components/site/listing-grid";
+import { Marketplace } from "@/components/site/marketplace";
 import { Footer } from "@/components/site/footer";
 
 export default function HomePage() {
@@ -10,8 +9,8 @@ export default function HomePage() {
       <Nav />
       <main>
         <Hero />
-        <CategoryChips />
-        <ListingGrid />
+        {/* Interactive: category chips + the (filtered) listings grid */}
+        <Marketplace />
       </main>
       <Footer />
     </>

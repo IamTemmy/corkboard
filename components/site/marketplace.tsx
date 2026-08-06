@@ -2,23 +2,31 @@
 
 import { useState } from "react";
 import { listings } from "@/lib/listings";
+import { SearchBar } from "./search-bar";
 import { CategoryChips } from "./category-chips";
 import { ListingGrid } from "./listing-grid";
 
-// Owns the "which category is selected?" state and derives the filtered list
-// from it. This is the only interactive (client) part of the homepage.
+// Owns the two things a shopper can change — the search text and the selected
+// category — and derives the visible listings from both. Because these live
+// here (the common parent), the SearchBar, chips, and grid all stay in sync.
 export function Marketplace() {
-  const [selected, setSelected] = useState("All");
+  const [category, setCategory] = useState("All");
+  const [query, setQuery] = useState("");
 
-  // "All" shows everything; otherwise keep only listings in the chosen category.
-  const visibleListings =
-    selected === "All"
-      ? listings
-      : listings.filter((listing) => listing.category === selected);
+  const q = query.trim().toLowerCase();
+  const visibleListings = listings.filter((listing) => {
+    const matchesCategory = category === "All" || listing.category === category;
+    const matchesQuery =
+      q === "" ||
+      listing.title.toLowerCase().includes(q) ||
+      listing.category.toLowerCase().includes(q);
+    return matchesCategory && matchesQuery;
+  });
 
   return (
     <>
-      <CategoryChips selected={selected} onSelect={setSelected} />
+      <SearchBar value={query} onChange={setQuery} />
+      <CategoryChips selected={category} onSelect={setCategory} />
       <ListingGrid listings={visibleListings} />
     </>
   );

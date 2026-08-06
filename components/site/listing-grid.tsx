@@ -14,7 +14,7 @@ export function ListingGrid({ listings }: { listings: Listing[] }) {
         // Empty state — shown when a category has no listings yet
         <div className="px-6 pb-16 sm:px-12">
           <p className="rounded-[14px] border border-dashed border-line py-16 text-center text-sm text-ink/55">
-            No listings in this category yet. Check back soon.
+            No listings match. Try a different search or category.
           </p>
         </div>
       ) : (

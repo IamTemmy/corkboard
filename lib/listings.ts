@@ -85,3 +85,8 @@ export const listings: Listing[] = [
 export function formatPrice(price: number): string {
   return price === 0 ? "Free" : `$${price}`;
 }
+
+/** Finds a single listing by its id, or returns undefined if none matches. */
+export function getListingById(id: string): Listing | undefined {
+  return listings.find((listing) => listing.id === id);
+}

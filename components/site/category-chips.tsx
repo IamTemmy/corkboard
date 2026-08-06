@@ -21,7 +21,10 @@ type CategoryChipsProps = {
 
 export function CategoryChips({ selected, onSelect }: CategoryChipsProps) {
   return (
-    <div className="flex flex-wrap justify-center gap-2.5 px-6 pb-2 pt-6 sm:px-12">
+    <div
+      id="categories"
+      className="flex flex-wrap justify-center gap-2.5 px-6 pb-2 pt-6 scroll-mt-4 sm:px-12"
+    >
       {categories.map((category) => {
         const isActive = category === selected;
         return (

@@ -23,10 +23,32 @@ const ibmPlexMono = IBM_Plex_Mono({
   weight: ["500"],
 });
 
+const siteUrl = "https://corkboard-six.vercel.app";
+const siteTitle = "Corkboard — Buy and sell with people on your campus";
+const siteDescription =
+  "A campus marketplace for verified students. No shipping, no fees — just students down the hall.";
+
 export const metadata: Metadata = {
-  title: "Corkboard — Buy and sell with people on your campus",
-  description:
-    "A campus marketplace for verified students. No shipping, no fees — just students down the hall.",
+  // Makes relative URLs (like the auto-generated preview image) resolve to the
+  // live domain. Update this if the domain ever changes.
+  metadataBase: new URL(siteUrl),
+  title: siteTitle,
+  description: siteDescription,
+  // Open Graph powers the rich link card in iMessage, WhatsApp, Slack, etc.
+  // The preview image comes automatically from app/opengraph-image.tsx.
+  openGraph: {
+    title: siteTitle,
+    description: siteDescription,
+    url: siteUrl,
+    siteName: "Corkboard",
+    type: "website",
+  },
+  // Twitter/X uses its own tags; "summary_large_image" shows the big card.
+  twitter: {
+    card: "summary_large_image",
+    title: siteTitle,
+    description: siteDescription,
+  },
 };
 
 export default function RootLayout({ children }: LayoutProps<"/">) {

@@ -52,6 +52,19 @@ Storing domains in a table rather than hardcoding them is what makes expansion a
 
 **Known limitation:** this proves someone controlled an approved email address at signup time. It does not prove they're honest, still enrolled, or endorsed by the school. Product copy must not overclaim here.
 
+## Identity: a chosen display name, not the J-number
+
+*(Added 2026-08-07, after auth shipped — an example of the docs being living: this refines the original plan now that real accounts exist.)*
+
+A student's identity on Corkboard is a **display name they choose**, not their login. Internally we always have the Supabase user id + verified email; the display name is presentation only.
+
+- The **J-number** (the email local part, e.g. `j00931199`) is a semi-private student ID. It's fine as a private greeting, but must **never** be shown publicly as a seller — so a new profile's `display_name` starts NULL, and the `/welcome` step (shown once after first verification) asks the student how they want to appear.
+- A **preferred first name is recommended, not required** — it makes the marketplace friendlier and more trustworthy. A student who'd rather not can pick "use my J-number" (a real JSU identity, not "anonymous"). Changeable later.
+- We store no last name; email / J-number / dorm / phone stay private.
+- The **"✓ Verified student" badge** — deliberately removed earlier when no auth existed — can return now, but only on listings by real verified accounts, and worded to avoid implying school endorsement (see non-endorsement stance above).
+
+Deferred (not premature-built): the account dropdown menu and seller reputation/ratings — they wait until there are real destinations/transactions to back them.
+
 ## Cut from the v1 data model
 
 `contact_events` and `audit_log` were in the reviewed schema but removed for v1 — they're analytics and ops infrastructure for a product with zero users. Revisit if/when Phase 3 (multi-campus) actually arrives.

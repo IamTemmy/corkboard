@@ -168,10 +168,13 @@ begin
   from public.approved_email_domains
   where domain = v_domain;
 
+  -- display_name is left NULL on purpose: the app prompts the student to choose
+  -- how they want to appear ("Welcome" step), then fills it in. A NULL here means
+  -- "hasn't chosen yet"; until they do, the UI falls back to their J-number.
   insert into public.profiles (id, display_name, campus, user_type)
   values (
     new.id,
-    split_part(new.email, '@', 1),          -- placeholder name = email local part
+    null,
     v_campus,
     coalesce(v_user_type, 'student')
   );

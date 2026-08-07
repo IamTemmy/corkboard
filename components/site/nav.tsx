@@ -3,6 +3,7 @@ import { Button } from "@/components/ui/button";
 import { MobileMenu } from "./mobile-menu";
 import { SignOutButton } from "./sign-out-button";
 import { createClient } from "@/lib/supabase/server";
+import { jnumberOf } from "@/lib/identity";
 
 // Two kinds of links live here:
 //  - "scroll" links jump to a section on the homepage (plain <a> + hash, so
@@ -22,7 +23,18 @@ export async function Nav() {
   const {
     data: { user },
   } = await supabase.auth.getUser();
-  const displayName = user?.email?.split("@")[0] ?? null;
+
+  // Greet by the student's chosen display name, falling back to their J-number
+  // until they've picked one at /welcome.
+  let displayName: string | null = null;
+  if (user) {
+    const { data: profile } = await supabase
+      .from("profiles")
+      .select("display_name")
+      .eq("id", user.id)
+      .maybeSingle();
+    displayName = profile?.display_name ?? jnumberOf(user.email);
+  }
 
   return (
     <nav className="relative flex items-center justify-between border-b border-line bg-paper-soft px-6 py-5 sm:grid sm:grid-cols-[1fr_auto_1fr] sm:px-12">

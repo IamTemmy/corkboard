@@ -63,8 +63,9 @@ export function JoinForm() {
     }
 
     // Signed in. The session cookie is now set; refresh so server components
-    // (like the header) re-render and see it, then send them home.
-    router.push("/");
+    // (like the header) re-render and see it. Send them to /welcome, which will
+    // ask first-timers how they want to appear and bounce returners straight home.
+    router.push("/welcome");
     router.refresh();
   }
 

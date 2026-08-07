@@ -127,7 +127,7 @@ export function MyListings({ listings }: { listings: Listing[] }) {
                   </Tooltip>
                 )}
                 {l.status === "available" && (
-                  <Tooltip label="Hold it for a buyer — stays visible, but contact is hidden">
+                  <Tooltip label="Reserve this item while a sale is pending">
                     <button
                       type="button"
                       disabled={busy}
@@ -139,7 +139,7 @@ export function MyListings({ listings }: { listings: Listing[] }) {
                   </Tooltip>
                 )}
                 {l.status !== "sold" && (
-                  <Tooltip label="It sold — leaves the board, kept here in your history">
+                  <Tooltip label="Mark as sold (item will leave the board)">
                     <button
                       type="button"
                       disabled={busy}
@@ -150,7 +150,7 @@ export function MyListings({ listings }: { listings: Listing[] }) {
                     </button>
                   </Tooltip>
                 )}
-                <Tooltip label="Remove permanently — use “Mark sold” if it actually sold">
+                <Tooltip label="Delete this listing permanently">
                   <button
                     type="button"
                     disabled={busy}

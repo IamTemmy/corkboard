@@ -68,6 +68,14 @@ export function AccountMenu({ name }: { name: string }) {
           className="absolute right-0 top-full z-40 mt-2 w-48 rounded-xl border border-line bg-paper-soft p-1 shadow-[0_8px_24px_rgba(28,36,48,0.12)]"
         >
           <Link
+            href="/new"
+            role="menuitem"
+            onClick={() => setOpen(false)}
+            className={item}
+          >
+            + List an item
+          </Link>
+          <Link
             href="/my-listings"
             role="menuitem"
             onClick={() => setOpen(false)}

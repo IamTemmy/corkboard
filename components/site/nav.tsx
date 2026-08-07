@@ -1,9 +1,6 @@
 import Link from "next/link";
-import { buttonVariants } from "@/components/ui/button";
-import { cn } from "@/lib/utils";
 import { MobileMenu } from "./mobile-menu";
 import { AccountMenu } from "./account-menu";
-import { Tooltip } from "./tooltip";
 import { createClient } from "@/lib/supabase/server";
 import { jnumberOf } from "@/lib/identity";
 
@@ -87,22 +84,9 @@ export async function Nav() {
       {/* Desktop right cluster: auth state + CTA (hidden on phones — these move
           into the mobile menu). justify-end keeps it pinned to the right edge of
           its grid column so the centre nav links stay truly page-centred. */}
-      <div className="hidden items-center gap-4 sm:flex sm:justify-end">
-        {/* CTA first, then the auth control in the far-right corner (where people
-            reflexively look for their account). Signed-out students land on /join
-            first — the /new page guards it. */}
-        <Tooltip label="Post something to sell" side="bottom">
-          <Link
-            href="/new"
-            className={cn(
-              buttonVariants(),
-              "h-auto rounded-lg px-4 py-2.5 text-sm font-semibold",
-            )}
-          >
-            + List an item
-          </Link>
-        </Tooltip>
-
+      {/* The corner is account-only now; "+ List an item" lives beside Search on
+          the home page and in the account menu / mobile menu elsewhere. */}
+      <div className="hidden items-center sm:flex sm:justify-end">
         {displayName ? (
           <AccountMenu name={displayName} />
         ) : (

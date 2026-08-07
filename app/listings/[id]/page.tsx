@@ -5,28 +5,21 @@ import { Nav } from "@/components/site/nav";
 import { Footer } from "@/components/site/footer";
 import { ListingCard } from "@/components/site/listing-card";
 import { ListingGallery } from "@/components/site/listing-gallery";
-import {
-  describeContact,
-  formatPostedAt,
-  formatPrice,
-  getListingById,
-  listings,
-} from "@/lib/listings";
+import { describeContact, formatPostedAt, formatPrice } from "@/lib/listings";
+import { getListingById, getListings } from "@/lib/queries";
 
 // `params` for a dynamic route arrives as a Promise in the App Router.
 type ListingPageProps = {
   params: Promise<{ id: string }>;
 };
 
-// Pre-build a static page for every listing at build time (one per id).
-export function generateStaticParams() {
-  return listings.map((listing) => ({ id: listing.id }));
-}
+// Listings come from the database and can change, so render on each request.
+export const dynamic = "force-dynamic";
 
 // Sets the browser-tab title per listing.
 export async function generateMetadata({ params }: ListingPageProps) {
   const { id } = await params;
-  const listing = getListingById(id);
+  const listing = await getListingById(id);
   return {
     title: listing
       ? `${listing.title} — Corkboard`
@@ -37,7 +30,7 @@ export async function generateMetadata({ params }: ListingPageProps) {
 export default async function ListingPage({ params }: ListingPageProps) {
   // Read which id the URL asked for (await, because params is a Promise).
   const { id } = await params;
-  const listing = getListingById(id);
+  const listing = await getListingById(id);
 
   // No matching listing → render Next's 404 page.
   if (!listing) notFound();
@@ -45,7 +38,8 @@ export default async function ListingPage({ params }: ListingPageProps) {
   const isAvailable = listing.status === "available";
 
   // Other items in the same category, to suggest below (max 4).
-  const related = listings
+  const all = await getListings();
+  const related = all
     .filter((other) => other.category === listing.category && other.id !== listing.id)
     .slice(0, 4);
 

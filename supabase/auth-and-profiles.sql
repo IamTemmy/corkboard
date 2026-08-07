@@ -119,6 +119,9 @@ revoke execute
 create table if not exists public.profiles (
   id           uuid primary key references auth.users(id) on delete cascade,
   display_name text,
+  email        text,   -- copied from the account; the guaranteed contact channel
+  instagram    text,   -- optional, bare handle (no @ / URL)
+  groupme      text,   -- optional, join link
   campus       text,
   user_type    text not null default 'student',
   created_at   timestamptz not null default now()
@@ -177,10 +180,12 @@ begin
   -- display_name is left NULL on purpose: the app prompts the student to choose
   -- how they want to appear ("Welcome" step), then fills it in. A NULL here means
   -- "hasn't chosen yet"; until they do, the UI falls back to their J-number.
-  insert into public.profiles (id, display_name, campus, user_type)
+  -- email is copied from the verified account — the guaranteed contact channel.
+  insert into public.profiles (id, display_name, email, campus, user_type)
   values (
     new.id,
     null,
+    new.email,
     v_campus,
     coalesce(v_user_type, 'student')
   );

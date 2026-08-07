@@ -13,6 +13,19 @@ export const MEETUP_SPOTS = [
 
 export type MeetupSpot = (typeof MEETUP_SPOTS)[number];
 
+// The item types a seller picks when listing. ("All" and "Free" are homepage
+// filter chips, not item types, so they're not offered here.)
+export const LISTING_CATEGORIES = [
+  "Electronics",
+  "Clothing",
+  "Furniture",
+  "Books",
+  "Dorm",
+] as const;
+
+// Condition options for the list form.
+export const CONDITIONS = ["New", "Like new", "Good condition", "Fair"] as const;
+
 export type ListingStatus = "available" | "reserved" | "sold";
 
 // A seller's chosen coordination channel(s). No one is forced to share social
@@ -33,8 +46,10 @@ export type Listing = {
   price: number;
   /** Image paths (in /public for now; storage URLs later). First is the thumbnail. */
   images: string[];
-  /** Seller's first name / nickname (an opaque sellerId comes with the DB). */
+  /** Seller's chosen display name, snapshotted onto the listing when created. */
   seller: string;
+  /** The account that owns this listing (null for the legacy demo rows). */
+  sellerId: string | null;
   /** Campus label ("JSU" for now). */
   campus: string;
   /** Where the exchange happens — one of the curated on-campus spots. */

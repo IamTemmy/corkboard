@@ -45,6 +45,25 @@ export default async function ListingPage({ params }: ListingPageProps) {
     data: { user },
   } = await supabase.auth.getUser();
 
+  // Real listings pull the seller's contact live from their profile; the legacy
+  // demo rows use their embedded contact blob. Only fetched when signed in —
+  // that's the only time contact is revealed anyway.
+  let contact = listing.contact;
+  if (user && listing.sellerId) {
+    const { data: sellerProfile } = await supabase
+      .from("profiles")
+      .select("email, instagram, groupme")
+      .eq("id", listing.sellerId)
+      .maybeSingle();
+    if (sellerProfile) {
+      contact = {
+        email: sellerProfile.email ?? undefined,
+        instagram: sellerProfile.instagram ?? undefined,
+        groupme: sellerProfile.groupme ?? undefined,
+      };
+    }
+  }
+
   // Other items in the same category, to suggest below (max 4).
   const all = await getListings();
   const related = all
@@ -119,7 +138,7 @@ export default async function ListingPage({ params }: ListingPageProps) {
               <ContactSeller
                 signedIn={!!user}
                 seller={listing.seller}
-                contact={listing.contact}
+                contact={contact}
               />
             ) : (
               <p className="mt-6 rounded-[12px] border border-dashed border-line px-4 py-4 text-sm text-ink/60">

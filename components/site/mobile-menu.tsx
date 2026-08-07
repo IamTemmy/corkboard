@@ -76,16 +76,13 @@ export function MobileMenu({
             ),
           )}
 
-          <button
-            type="button"
-            title="Listing items is coming soon"
+          <Link
+            href="/new"
+            onClick={() => setOpen(false)}
             className="mt-1 flex items-center justify-center gap-2 rounded-lg bg-ink px-4 py-3 text-sm font-semibold text-paper"
           >
             + List an item
-            <span className="rounded-full bg-paper/20 px-2 py-0.5 text-[10px] font-semibold uppercase tracking-[0.06em]">
-              Soon
-            </span>
-          </button>
+          </Link>
 
           {/* Auth: a Join link when logged out, or name + sign-out when in */}
           <div className="mt-1 flex items-center justify-between border-t border-line px-2 pt-3">

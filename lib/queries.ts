@@ -16,6 +16,7 @@ type ListingRow = {
   meetup_spot: string;
   contact: SellerContact | null;
   status: ListingStatus;
+  seller_id: string | null;
 };
 
 // Translate a database row into the app's Listing shape (camelCase).
@@ -29,6 +30,7 @@ function mapRow(row: ListingRow): Listing {
     price: row.price,
     images: row.images ?? [],
     seller: row.seller,
+    sellerId: row.seller_id ?? null,
     campus: row.campus,
     meetupSpot: row.meetup_spot as MeetupSpot,
     contact: row.contact ?? {},

@@ -1,5 +1,6 @@
 import Link from "next/link";
-import { Button } from "@/components/ui/button";
+import { buttonVariants } from "@/components/ui/button";
+import { cn } from "@/lib/utils";
 import { MobileMenu } from "./mobile-menu";
 import { SignOutButton } from "./sign-out-button";
 import { createClient } from "@/lib/supabase/server";
@@ -91,17 +92,16 @@ export async function Nav() {
           </Link>
         )}
 
-        {/* Listing an item still needs the "new listing" form, so it's not wired
-            yet; the "Soon" badge makes that honest instead of clickable-but-dead. */}
-        <Button
-          title="Listing items is coming soon"
-          className="h-auto rounded-lg px-4 py-2.5 text-sm font-semibold"
+        {/* Signed-out students land on /join first (the page guards it). */}
+        <Link
+          href="/new"
+          className={cn(
+            buttonVariants(),
+            "h-auto rounded-lg px-4 py-2.5 text-sm font-semibold",
+          )}
         >
           + List an item
-          <span className="ml-2 rounded-full bg-paper/20 px-2 py-0.5 text-[10px] font-semibold uppercase tracking-[0.06em]">
-            Soon
-          </span>
-        </Button>
+        </Link>
       </div>
 
       {/* Phone-only hamburger holding the same links + CTA */}

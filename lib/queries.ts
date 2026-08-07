@@ -1,4 +1,4 @@
-import { supabase } from "./supabase";
+import { createClient } from "./supabase/server";
 import type { Listing, ListingStatus, MeetupSpot, SellerContact } from "./listings";
 
 // The raw shape of a row as it comes back from the database (snake_case columns).
@@ -39,6 +39,7 @@ function mapRow(row: ListingRow): Listing {
 
 /** All listings, newest first. */
 export async function getListings(): Promise<Listing[]> {
+  const supabase = await createClient();
   const { data, error } = await supabase
     .from("listings")
     .select("*")
@@ -53,6 +54,7 @@ export async function getListings(): Promise<Listing[]> {
 
 /** A single listing by id, or undefined if it doesn't exist. */
 export async function getListingById(id: string): Promise<Listing | undefined> {
+  const supabase = await createClient();
   const { data, error } = await supabase
     .from("listings")
     .select("*")

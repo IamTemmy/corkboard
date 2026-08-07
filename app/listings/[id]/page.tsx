@@ -3,6 +3,8 @@ import { notFound } from "next/navigation";
 import { Button } from "@/components/ui/button";
 import { Nav } from "@/components/site/nav";
 import { Footer } from "@/components/site/footer";
+import { ListingCard } from "@/components/site/listing-card";
+import { ListingGallery } from "@/components/site/listing-gallery";
 import {
   describeContact,
   formatPostedAt,
@@ -42,6 +44,11 @@ export default async function ListingPage({ params }: ListingPageProps) {
 
   const isAvailable = listing.status === "available";
 
+  // Other items in the same category, to suggest below (max 4).
+  const related = listings
+    .filter((other) => other.category === listing.category && other.id !== listing.id)
+    .slice(0, 4);
+
   return (
     <>
       <Nav />
@@ -54,30 +61,12 @@ export default async function ListingPage({ params }: ListingPageProps) {
         </Link>
 
         <div className="grid gap-8 md:grid-cols-2">
-          {/* Photo (with the same pin motif as the cards). self-start keeps the
-              box at the image's natural height instead of stretching to match
-              the details column. */}
-          <div className="relative self-start overflow-hidden rounded-[14px] border border-line">
-            <span className="absolute left-3 top-3 z-10 flex size-[22px] items-center justify-center rounded-full bg-brick shadow-[0_2px_4px_rgba(0,0,0,0.2)]">
-              <span className="size-1.5 rounded-full bg-paper-soft" />
-            </span>
-            {listing.images[0] ? (
-              // Full image (not cropped) so the buyer sees the whole product.
-              // eslint-disable-next-line @next/next/no-img-element
-              <img
-                src={listing.images[0]}
-                alt={listing.title}
-                className={`w-full ${isAvailable ? "" : "opacity-60"}`}
-              />
-            ) : (
-              <div
-                className="flex aspect-[4/5] w-full items-center justify-center text-[13px] font-medium text-ink/35"
-                style={{ background: "linear-gradient(135deg, #DCD3BE, #EDE6D6)" }}
-              >
-                Photo
-              </div>
-            )}
-          </div>
+          {/* Image gallery — full main image plus thumbnails for extra angles */}
+          <ListingGallery
+            images={listing.images}
+            alt={listing.title}
+            dimmed={!isAvailable}
+          />
 
           {/* Details */}
           <div className="flex flex-col">
@@ -149,6 +138,20 @@ export default async function ListingPage({ params }: ListingPageProps) {
             )}
           </div>
         </div>
+
+        {/* Keep browsing — other listings in the same category */}
+        {related.length > 0 && (
+          <section className="mt-16">
+            <h2 className="mb-5 text-[13px] font-semibold uppercase tracking-[0.06em] text-ink/55">
+              More in {listing.category}
+            </h2>
+            <div className="grid grid-cols-2 gap-5 sm:grid-cols-4">
+              {related.map((other) => (
+                <ListingCard key={other.id} listing={other} />
+              ))}
+            </div>
+          </section>
+        )}
       </main>
       <Footer />
     </>

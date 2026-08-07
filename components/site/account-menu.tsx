@@ -83,16 +83,14 @@ export function AccountMenu({ name }: { name: string }) {
           >
             My listings
           </Link>
-          <span
+          <Link
+            href="/settings"
             role="menuitem"
-            aria-disabled="true"
-            className="flex items-center justify-between rounded-lg px-3 py-2 text-sm text-ink/40"
+            onClick={() => setOpen(false)}
+            className={item}
           >
             Settings
-            <span className="text-[10px] font-semibold uppercase tracking-[0.05em]">
-              Soon
-            </span>
-          </span>
+          </Link>
           <div className="my-1 h-px bg-line" />
           <SignOutButton className={item} />
         </div>

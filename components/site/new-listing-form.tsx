@@ -14,6 +14,7 @@ import {
 // Generous cap on the RAW pick — we downscale/compress before upload, so the
 // stored file ends up small regardless. (Phone photos, esp. HEIC, run large.)
 const MAX_IMAGE_BYTES = 25 * 1024 * 1024; // 25 MB
+const MAX_IMAGES = 5;
 
 const fieldClass =
   "w-full rounded-lg border border-line bg-paper px-4 py-3 text-ink outline-none transition placeholder:text-ink/40 focus:border-marigold focus:ring-2 focus:ring-marigold/30";
@@ -41,45 +42,64 @@ export function NewListingForm({
   const [instagram, setInstagram] = useState(initialInstagram);
   const [groupme, setGroupme] = useState(initialGroupme);
 
-  const [file, setFile] = useState<File | null>(null);
-  const [previewUrl, setPreviewUrl] = useState<string | null>(null);
+  // A listing can have several photos; the first is the cover.
+  const [images, setImages] = useState<{ file: File; previewUrl: string }[]>([]);
   const [processing, setProcessing] = useState(false);
 
   const [saving, setSaving] = useState(false);
   const [error, setError] = useState<string | null>(null);
 
-  async function onPickImage(e: React.ChangeEvent<HTMLInputElement>) {
-    const picked = e.target.files?.[0] ?? null;
+  async function onPickImages(e: React.ChangeEvent<HTMLInputElement>) {
+    const picked = Array.from(e.target.files ?? []);
+    e.target.value = ""; // let the same file be re-picked later
     setError(null);
-    if (!picked) return;
-    if (picked.size > MAX_IMAGE_BYTES) {
-      setError("That photo is over 25 MB — please pick a smaller one.");
+    if (picked.length === 0) return;
+
+    const room = MAX_IMAGES - images.length;
+    if (room <= 0) {
+      setError(`You can add up to ${MAX_IMAGES} photos.`);
       return;
     }
-    // Convert HEIC → JPEG (if needed) and downscale/compress before upload.
+
+    // Convert HEIC → JPEG (if needed) and downscale/compress each before upload.
     setProcessing(true);
     try {
-      const processed = await processImageForUpload(picked);
-      setFile(processed);
-      setPreviewUrl((prev) => {
-        if (prev) URL.revokeObjectURL(prev);
-        return URL.createObjectURL(processed);
-      });
+      const added: { file: File; previewUrl: string }[] = [];
+      for (const p of picked.slice(0, room)) {
+        if (p.size > MAX_IMAGE_BYTES) continue; // skip oversized picks
+        const f = await processImageForUpload(p);
+        added.push({ file: f, previewUrl: URL.createObjectURL(f) });
+      }
+      if (added.length === 0) {
+        setError("Those photos were too large (over 25 MB each).");
+        return;
+      }
+      setImages((prev) => [...prev, ...added]);
+      if (picked.length > room) {
+        setError(`Only ${room} more could be added (max ${MAX_IMAGES}).`);
+      }
     } catch {
-      setError("Couldn't read that photo — try a different one.");
-      setFile(null);
-      setPreviewUrl(null);
+      setError("Couldn't read one of those photos — try different ones.");
     } finally {
       setProcessing(false);
     }
+  }
+
+  function removeImage(index: number) {
+    setImages((prev) => {
+      const next = [...prev];
+      const [removed] = next.splice(index, 1);
+      if (removed) URL.revokeObjectURL(removed.previewUrl);
+      return next;
+    });
   }
 
   async function onSubmit(e: React.FormEvent) {
     e.preventDefault();
     setError(null);
 
-    if (!file) {
-      setError("Add a photo so buyers can see the item.");
+    if (images.length === 0) {
+      setError("Add at least one photo so buyers can see the item.");
       return;
     }
     const priceValue = isFree ? 0 : Number(price);
@@ -91,20 +111,22 @@ export function NewListingForm({
     setSaving(true);
     const supabase = createClient();
 
-    // 1. Upload the photo into the student's own folder.
-    const ext = file.name.split(".").pop()?.toLowerCase() || "jpg";
-    const path = `${userId}/${crypto.randomUUID()}.${ext}`;
-    const { error: uploadError } = await supabase.storage
-      .from("listing-images")
-      .upload(path, file, { contentType: file.type });
-    if (uploadError) {
-      setSaving(false);
-      setError(`Couldn't upload the photo: ${uploadError.message}`);
-      return;
+    // 1. Upload each photo into the student's own folder (first = cover).
+    const imageUrls: string[] = [];
+    for (const img of images) {
+      const path = `${userId}/${crypto.randomUUID()}.jpg`;
+      const { error: uploadError } = await supabase.storage
+        .from("listing-images")
+        .upload(path, img.file, { contentType: "image/jpeg" });
+      if (uploadError) {
+        setSaving(false);
+        setError(`Couldn't upload a photo: ${uploadError.message}`);
+        return;
+      }
+      imageUrls.push(
+        supabase.storage.from("listing-images").getPublicUrl(path).data.publicUrl,
+      );
     }
-    const {
-      data: { publicUrl },
-    } = supabase.storage.from("listing-images").getPublicUrl(path);
 
     // 2. Save any contact changes back to the profile (shown on all listings).
     const ig = instagram.trim().replace(/^@/, "");
@@ -125,7 +147,7 @@ export function NewListingForm({
         category,
         condition,
         price: priceValue,
-        images: [publicUrl],
+        images: imageUrls,
         seller: sellerName,
         seller_id: userId,
         campus: "JSU",
@@ -148,34 +170,69 @@ export function NewListingForm({
 
   return (
     <form onSubmit={onSubmit} className="flex flex-col gap-5">
-      {/* Photo */}
+      {/* Photos — several allowed; the first is the cover */}
       <div className="flex flex-col gap-1.5">
-        <span className="text-sm font-medium text-ink/80">Photo</span>
-        <label className="relative flex aspect-[4/5] max-w-xs cursor-pointer items-center justify-center overflow-hidden rounded-xl border border-dashed border-line bg-paper-soft text-center transition hover:border-ink/30">
-          {previewUrl ? (
-            // eslint-disable-next-line @next/next/no-img-element
-            <img src={previewUrl} alt="" className="size-full object-cover" />
-          ) : (
-            <span className="px-4 text-sm text-ink/50">
-              Tap to add a photo
-              <br />
-              <span className="text-xs">
-                JPG, PNG, or HEIC — optimized automatically
-              </span>
-            </span>
+        <span className="text-sm font-medium text-ink/80">
+          Photos{" "}
+          <span className="font-normal text-ink/50">(the first is the cover)</span>
+        </span>
+
+        <div className="flex flex-wrap gap-3">
+          {images.map((img, i) => (
+            <div
+              key={img.previewUrl}
+              className="relative aspect-[4/5] w-24 overflow-hidden rounded-lg border border-line"
+            >
+              {/* eslint-disable-next-line @next/next/no-img-element */}
+              <img src={img.previewUrl} alt="" className="size-full object-cover" />
+              {i === 0 && (
+                <span className="absolute left-1 top-1 rounded bg-ink/80 px-1.5 py-0.5 text-[9px] font-semibold uppercase tracking-[0.05em] text-paper">
+                  Cover
+                </span>
+              )}
+              <button
+                type="button"
+                onClick={() => removeImage(i)}
+                aria-label="Remove photo"
+                className="absolute right-1 top-1 flex size-5 items-center justify-center rounded-full bg-ink/80 text-paper"
+              >
+                <svg viewBox="0 0 24 24" className="size-3" fill="none" aria-hidden="true">
+                  <path
+                    d="M6 6l12 12M18 6L6 18"
+                    stroke="currentColor"
+                    strokeWidth="2.5"
+                    strokeLinecap="round"
+                  />
+                </svg>
+              </button>
+            </div>
+          ))}
+
+          {images.length < MAX_IMAGES && (
+            <label className="flex aspect-[4/5] w-24 cursor-pointer flex-col items-center justify-center rounded-lg border border-dashed border-line bg-paper-soft text-center text-xs text-ink/50 transition hover:border-ink/30">
+              {processing ? (
+                "Processing…"
+              ) : (
+                <span>
+                  + Add
+                  <br />
+                  photo
+                </span>
+              )}
+              <input
+                type="file"
+                accept="image/*,.heic,.heif"
+                multiple
+                onChange={onPickImages}
+                className="hidden"
+              />
+            </label>
           )}
-          {processing && (
-            <span className="absolute inset-0 flex items-center justify-center bg-paper-soft/85 text-sm font-medium text-ink/70">
-              Processing photo…
-            </span>
-          )}
-          <input
-            type="file"
-            accept="image/*,.heic,.heif"
-            onChange={onPickImage}
-            className="hidden"
-          />
-        </label>
+        </div>
+
+        <span className="text-xs text-ink/50">
+          JPG, PNG, or HEIC — up to {MAX_IMAGES}, optimized automatically.
+        </span>
       </div>
 
       {/* Title */}

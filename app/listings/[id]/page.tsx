@@ -1,12 +1,13 @@
 import Link from "next/link";
 import { notFound } from "next/navigation";
-import { Button } from "@/components/ui/button";
 import { Nav } from "@/components/site/nav";
 import { Footer } from "@/components/site/footer";
 import { ListingCard } from "@/components/site/listing-card";
 import { ListingGallery } from "@/components/site/listing-gallery";
-import { describeContact, formatPostedAt, formatPrice } from "@/lib/listings";
+import { ContactSeller } from "@/components/site/contact-seller";
+import { formatPostedAt, formatPrice } from "@/lib/listings";
 import { getListingById, getListings } from "@/lib/queries";
+import { createClient } from "@/lib/supabase/server";
 
 // `params` for a dynamic route arrives as a Promise in the App Router.
 type ListingPageProps = {
@@ -36,6 +37,13 @@ export default async function ListingPage({ params }: ListingPageProps) {
   if (!listing) notFound();
 
   const isAvailable = listing.status === "available";
+
+  // Is a verified student signed in? (Signup is gated to approved .edu domains,
+  // so a session already means "verified student".) Controls the contact reveal.
+  const supabase = await createClient();
+  const {
+    data: { user },
+  } = await supabase.auth.getUser();
 
   // Other items in the same category, to suggest below (max 4).
   const all = await getListings();
@@ -108,23 +116,11 @@ export default async function ListingPage({ params }: ListingPageProps) {
             </p>
 
             {isAvailable ? (
-              <div className="mt-6">
-                <Button
-                  title="Seller contact is coming soon"
-                  className="h-auto w-full rounded-lg px-5 py-3 text-sm font-semibold sm:w-auto"
-                >
-                  Contact seller
-                  <span className="ml-2 rounded-full bg-paper/20 px-2 py-0.5 text-[10px] font-semibold uppercase tracking-[0.06em]">
-                    Soon
-                  </span>
-                </Button>
-                <p className="mt-3 max-w-md text-xs text-ink/55">
-                  When accounts launch, verified students can reach {listing.seller}{" "}
-                  over {describeContact(listing.contact)} to agree on a time. Always
-                  meet at the campus spot above, in daylight — and it&apos;s fine to
-                  bring a friend.
-                </p>
-              </div>
+              <ContactSeller
+                signedIn={!!user}
+                seller={listing.seller}
+                contact={listing.contact}
+              />
             ) : (
               <p className="mt-6 rounded-[12px] border border-dashed border-line px-4 py-4 text-sm text-ink/60">
                 This item is {listing.status} and is no longer available.

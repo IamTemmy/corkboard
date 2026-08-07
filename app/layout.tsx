@@ -1,5 +1,6 @@
 import type { Metadata } from "next";
 import { Fraunces, Inter, IBM_Plex_Mono } from "next/font/google";
+import { siteUrl } from "@/lib/site";
 import "./globals.css";
 
 // Body & UI text — the workhorse font for everything that isn't a heading or price.
@@ -23,7 +24,6 @@ const ibmPlexMono = IBM_Plex_Mono({
   weight: ["500"],
 });
 
-const siteUrl = "https://corkboard-six.vercel.app";
 const siteTitle = "Corkboard — Buy and sell with people on your campus";
 const siteDescription =
   "A campus marketplace for verified students. No shipping, no fees — just students down the hall.";

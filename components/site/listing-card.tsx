@@ -25,8 +25,10 @@ export function ListingCard({ listing }: { listing: Listing }) {
           </span>
         )}
 
-        {/* Photo — a real image once one exists, otherwise the placeholder */}
-        <div className={`aspect-[4/3] w-full ${isAvailable ? "" : "opacity-60"}`}>
+        {/* Photo — a real image once one exists, otherwise the placeholder.
+            Portrait 4:5 slot fits the (mostly portrait) product photos with
+            less cropping than a landscape box. */}
+        <div className={`aspect-[4/5] w-full ${isAvailable ? "" : "opacity-60"}`}>
           {listing.images[0] ? (
             // eslint-disable-next-line @next/next/no-img-element
             <img

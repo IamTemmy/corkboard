@@ -61,23 +61,22 @@ export default async function ListingPage({ params }: ListingPageProps) {
             <span className="absolute left-3 top-3 z-10 flex size-[22px] items-center justify-center rounded-full bg-brick shadow-[0_2px_4px_rgba(0,0,0,0.2)]">
               <span className="size-1.5 rounded-full bg-paper-soft" />
             </span>
-            <div className={`aspect-[4/3] w-full ${isAvailable ? "" : "opacity-60"}`}>
-              {listing.images[0] ? (
-                // eslint-disable-next-line @next/next/no-img-element
-                <img
-                  src={listing.images[0]}
-                  alt={listing.title}
-                  className="h-full w-full object-cover"
-                />
-              ) : (
-                <div
-                  className="flex h-full w-full items-center justify-center text-[13px] font-medium text-ink/35"
-                  style={{ background: "linear-gradient(135deg, #DCD3BE, #EDE6D6)" }}
-                >
-                  Photo
-                </div>
-              )}
-            </div>
+            {listing.images[0] ? (
+              // Full image (not cropped) so the buyer sees the whole product.
+              // eslint-disable-next-line @next/next/no-img-element
+              <img
+                src={listing.images[0]}
+                alt={listing.title}
+                className={`w-full ${isAvailable ? "" : "opacity-60"}`}
+              />
+            ) : (
+              <div
+                className="flex aspect-[4/5] w-full items-center justify-center text-[13px] font-medium text-ink/35"
+                style={{ background: "linear-gradient(135deg, #DCD3BE, #EDE6D6)" }}
+              >
+                Photo
+              </div>
+            )}
           </div>
 
           {/* Details */}

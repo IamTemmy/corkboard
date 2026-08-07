@@ -147,6 +147,12 @@ create policy "users update own profile"
   using (auth.uid() = id)
   with check (auth.uid() = id);
 
+-- RLS decides WHICH ROWS a role may touch; this GRANT decides whether the role
+-- may touch the table at all. Auto-expose is off on this project, so without this
+-- the policies above have nothing to gate and signed-in users get "permission
+-- denied". (anon is intentionally excluded — profiles aren't public.)
+grant select, insert, update on table public.profiles to authenticated;
+
 -- When a new auth user is created, make their profile automatically. This runs
 -- as the function owner (SECURITY DEFINER) so it can write past RLS — standard
 -- Supabase pattern. search_path is pinned and every name is schema-qualified.

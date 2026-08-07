@@ -95,16 +95,22 @@ export function WelcomeForm({
         </Button>
       </form>
 
-      <div className="mt-4 flex items-center justify-center">
-        <button
-          type="button"
-          disabled={saving}
-          onClick={() => save(jnumber)}
-          className="text-sm text-ink/60 underline-offset-4 hover:text-ink hover:underline disabled:opacity-50"
-        >
-          Use my J-number ({jnumber}) instead
-        </button>
+      {/* Secondary choice — styled as an outline button so it clearly reads as
+          an action, not body text. */}
+      <div className="mt-3 flex items-center gap-3">
+        <span className="h-px flex-1 bg-line" />
+        <span className="text-xs uppercase tracking-[0.06em] text-ink/45">or</span>
+        <span className="h-px flex-1 bg-line" />
       </div>
+
+      <button
+        type="button"
+        disabled={saving}
+        onClick={() => save(jnumber)}
+        className="mt-3 h-auto w-full rounded-lg border border-line bg-paper-soft py-3 text-sm font-medium text-ink/80 transition-colors hover:border-ink/30 hover:text-ink disabled:opacity-50"
+      >
+        Use my J-number ({jnumber}) instead
+      </button>
     </div>
   );
 }

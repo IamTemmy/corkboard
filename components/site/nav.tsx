@@ -8,7 +8,8 @@ import { MobileMenu } from "./mobile-menu";
 //  - "page" links go to a real route (next/link for instant client-side nav)
 const navLinks = [
   { label: "Browse", href: "/#listings", kind: "scroll" as const },
-  { label: "Categories", href: "/#categories", kind: "scroll" as const },
+  // "Categories" was removed — it scrolled to the filter chips, which sit right
+  // above the listings, so it did the same thing as "Browse" (redundant).
   { label: "How it works", href: "/how-it-works", kind: "page" as const },
 ];
 

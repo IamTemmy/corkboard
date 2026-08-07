@@ -2,9 +2,11 @@ import Link from "next/link";
 import { buttonVariants } from "@/components/ui/button";
 import { cn } from "@/lib/utils";
 import { MobileMenu } from "./mobile-menu";
-import { SignOutButton } from "./sign-out-button";
+import { AccountMenu } from "./account-menu";
 import { createClient } from "@/lib/supabase/server";
 import { jnumberOf } from "@/lib/identity";
+
+type NavItem = { label: string; href: string; kind: "scroll" | "page" };
 
 // Two kinds of links live here:
 //  - "scroll" links jump to a section on the homepage (plain <a> + hash, so
@@ -37,6 +39,15 @@ export async function Nav() {
     displayName = profile?.display_name ?? jnumberOf(user.email);
   }
 
+  // Centre nav: "My listings" sits right after Browse for signed-in students.
+  const centerItems: NavItem[] = [
+    navLinks[0],
+    ...(displayName
+      ? [{ label: "My listings", href: "/my-listings", kind: "page" as const }]
+      : []),
+    navLinks[1],
+  ];
+
   return (
     <nav className="relative flex items-center justify-between border-b border-line bg-paper-soft px-6 py-5 sm:grid sm:grid-cols-[1fr_auto_1fr] sm:px-12">
       {/* Wordmark links home. A plain <a> (not next/link) forces a full page
@@ -51,12 +62,12 @@ export async function Nav() {
 
       {/* Center links — hidden on small screens to keep the mobile header clean */}
       <div className="hidden items-center gap-8 text-sm font-medium sm:flex">
-        {navLinks.map((link) =>
+        {centerItems.map((link) =>
           link.kind === "page" ? (
             <Link
               key={link.label}
               href={link.href}
-              className="text-ink/75 transition-colors hover:text-ink"
+              className="whitespace-nowrap text-ink/75 transition-colors hover:text-ink"
             >
               {link.label}
             </Link>
@@ -64,7 +75,7 @@ export async function Nav() {
             <a
               key={link.label}
               href={link.href}
-              className="text-ink/75 transition-colors hover:text-ink"
+              className="whitespace-nowrap text-ink/75 transition-colors hover:text-ink"
             >
               {link.label}
             </a>
@@ -75,20 +86,9 @@ export async function Nav() {
       {/* Desktop right cluster: auth state + CTA (hidden on phones — these move
           into the mobile menu). justify-end keeps it pinned to the right edge of
           its grid column so the centre nav links stay truly page-centred. */}
-      <div className="hidden items-center gap-5 sm:flex sm:justify-end">
+      <div className="hidden items-center gap-4 sm:flex sm:justify-end">
         {displayName ? (
-          <span className="flex items-center gap-4 text-sm">
-            <Link
-              href="/my-listings"
-              className="font-medium text-ink/75 transition-colors hover:text-ink"
-            >
-              My listings
-            </Link>
-            <span className="text-ink/75">
-              Hi, <span className="font-medium text-ink">{displayName}</span>
-            </span>
-            <SignOutButton />
-          </span>
+          <AccountMenu name={displayName} />
         ) : (
           <Link
             href="/join"
@@ -101,6 +101,7 @@ export async function Nav() {
         {/* Signed-out students land on /join first (the page guards it). */}
         <Link
           href="/new"
+          title="Post something to sell"
           className={cn(
             buttonVariants(),
             "h-auto rounded-lg px-4 py-2.5 text-sm font-semibold",

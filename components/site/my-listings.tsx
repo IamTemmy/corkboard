@@ -19,8 +19,14 @@ const statusLabel: Record<ListingStatus, string> = {
   sold: "Sold",
 };
 
-const actionBtn =
-  "rounded-lg border border-line px-3 py-1.5 text-xs font-medium text-ink/80 transition-colors hover:border-ink/30 hover:text-ink disabled:opacity-50";
+// Matched set: same height/shape, distinct-but-consistent hover fills (soft grey
+// for neutral, a visible lightening for the dark "sold", soft red for delete).
+const neutralBtn =
+  "rounded-lg border border-line px-3.5 py-2 text-xs font-medium text-ink/80 transition-colors hover:border-ink/20 hover:bg-ink/5 hover:text-ink disabled:opacity-50";
+const soldBtn =
+  "rounded-lg bg-ink px-3.5 py-2 text-xs font-semibold text-paper transition-colors hover:bg-ink/85 disabled:opacity-50";
+const dangerBtn =
+  "rounded-lg px-3.5 py-2 text-xs font-medium text-brick transition-colors hover:bg-brick/10 disabled:opacity-50";
 
 export function MyListings({ listings }: { listings: Listing[] }) {
   const router = useRouter();
@@ -112,9 +118,10 @@ export function MyListings({ listings }: { listings: Listing[] }) {
                     type="button"
                     disabled={busy}
                     onClick={() => setStatus(l.id, "available")}
-                    className={actionBtn}
+                    title="Put it back on the board as available"
+                    className={neutralBtn}
                   >
-                    {l.status === "sold" ? "Relist (available)" : "Mark available"}
+                    {l.status === "sold" ? "Relist" : "Mark available"}
                   </button>
                 )}
                 {l.status === "available" && (
@@ -122,7 +129,8 @@ export function MyListings({ listings }: { listings: Listing[] }) {
                     type="button"
                     disabled={busy}
                     onClick={() => setStatus(l.id, "reserved")}
-                    className={actionBtn}
+                    title="Hold it for a buyer — stays visible, but contact is hidden"
+                    className={neutralBtn}
                   >
                     Mark reserved
                   </button>
@@ -132,7 +140,8 @@ export function MyListings({ listings }: { listings: Listing[] }) {
                     type="button"
                     disabled={busy}
                     onClick={() => setStatus(l.id, "sold")}
-                    className="rounded-lg bg-ink px-3 py-1.5 text-xs font-semibold text-paper transition-opacity hover:opacity-90 disabled:opacity-50"
+                    title="It sold — leaves the board, kept here in your history"
+                    className={soldBtn}
                   >
                     Mark sold
                   </button>
@@ -141,7 +150,8 @@ export function MyListings({ listings }: { listings: Listing[] }) {
                   type="button"
                   disabled={busy}
                   onClick={() => remove(l.id)}
-                  className="rounded-lg px-3 py-1.5 text-xs font-medium text-brick transition-colors hover:bg-brick/10 disabled:opacity-50"
+                  title="Remove permanently — use “Mark sold” if it actually sold"
+                  className={dangerBtn}
                 >
                   Delete
                 </button>

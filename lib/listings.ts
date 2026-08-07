@@ -1,8 +1,8 @@
-// Hardcoded sample listings for the static prototype (Phase 1).
-// The `Listing` shape below is deliberately the *real* shape we expect the
-// Supabase-backed version to use, so the UI and the future database agree from
-// the start. Human-readable fields now (seller name, campus); the opaque
-// database keys (sellerId, campusId) arrive with the backend.
+// Hardcoded sample listings for the static prototype (Phase 1), using real
+// photos of real items. The `Listing` shape is deliberately the *real* shape we
+// expect the Supabase-backed version to use, so the UI and the future database
+// agree from the start. Human-readable fields now (seller name, campus); the
+// opaque database keys (sellerId, campusId) arrive with the backend.
 
 // The campus meetup spots a seller can choose from. Single source of truth —
 // the future "list an item" form's dropdown will read from this same list.
@@ -33,8 +33,8 @@ export type Listing = {
   condition: string;
   /** Whole dollars. 0 means the item is free. */
   price: number;
-  /** Local path in /public for now; a storage URL once uploads exist. null → placeholder. */
-  imageUrl: string | null;
+  /** Image paths (in /public for now; storage URLs later). First is the thumbnail. */
+  images: string[];
   /** Seller's first name / nickname (an opaque sellerId comes with the DB). */
   seller: string;
   /** Campus label ("JSU" for now; a campusId comes with the DB). */
@@ -50,14 +50,46 @@ export type Listing = {
 
 export const listings: Listing[] = [
   {
-    id: "beats-pill",
-    title: "Beats Pill Speaker",
+    id: "nike-air-force-1",
+    title: "Nike Air Force 1 (White/Black)",
     description:
-      "Barely used Beats Pill — great sound and battery life. Comes with the charging cable.",
-    category: "Electronics",
+      "Classic white Air Force 1s with the black swoosh. Light wear, plenty of life left. Men's US 10.",
+    category: "Clothing",
+    condition: "Good condition",
+    price: 45,
+    images: ["/listings/nike-af1-1.jpg", "/listings/nike-af1-2.jpg"],
+    seller: "Devon",
+    campus: "JSU",
+    meetupSpot: "Student Center",
+    contact: { instagram: "@devon.d", email: "devon@students.jsu.edu" },
+    status: "available",
+    postedAt: "2026-08-06",
+  },
+  {
+    id: "puma-mayze",
+    title: "Puma Mayze Platform Sneakers",
+    description:
+      "White Puma platform sneakers with floral embroidery. Worn twice, super clean. Women's US 8.",
+    category: "Clothing",
     condition: "Like new",
-    price: 60,
-    imageUrl: null,
+    price: 35,
+    images: ["/listings/puma-floral.jpg"],
+    seller: "Maya",
+    campus: "JSU",
+    meetupSpot: "Student Plaza",
+    contact: { instagram: "@maya.thrifts" },
+    status: "reserved",
+    postedAt: "2026-08-04",
+  },
+  {
+    id: "suede-sandals",
+    title: "Suede Double-Strap Sandals",
+    description:
+      "Tan suede double-buckle slides, barely worn. Comes in the original box. Size 9.",
+    category: "Clothing",
+    condition: "Like new",
+    price: 22,
+    images: ["/listings/suede-sandals.jpg"],
     seller: "Temi",
     campus: "JSU",
     meetupSpot: "Student Center",
@@ -66,116 +98,68 @@ export const listings: Listing[] = [
     postedAt: "2026-08-05",
   },
   {
-    id: "denim-jacket",
-    title: "Denim Jacket, size M",
+    id: "epiphone-sg",
+    title: "Epiphone SG Electric Guitar",
     description:
-      "Classic medium-wash denim jacket, size M. Worn a handful of times, no rips or stains.",
-    category: "Clothing",
+      "Cherry-red Epiphone SG Tribute. Plays great, includes the stand and strap. A couple of small scuffs on the body.",
+    category: "Electronics",
     condition: "Good condition",
-    price: 18,
-    imageUrl: null,
-    seller: "Maya",
-    campus: "JSU",
-    meetupSpot: "Student Plaza",
-    contact: { instagram: "@maya.thrifts" },
-    status: "available",
-    postedAt: "2026-08-04",
-  },
-  {
-    id: "graphic-tees",
-    title: "Graphic Tee Bundle (3)",
-    description:
-      "Three graphic tees, size L, selling together as a bundle. Soft and barely worn.",
-    category: "Clothing",
-    condition: "Good condition",
-    price: 15,
-    imageUrl: null,
-    seller: "Jordan",
-    campus: "JSU",
-    meetupSpot: "Library",
-    contact: { groupme: "https://groupme.com/join_group/example" },
-    status: "available",
-    postedAt: "2026-08-06",
-  },
-  {
-    id: "desk-lamp",
-    title: "Desk Lamp",
-    description:
-      "Adjustable LED desk lamp with a few brightness levels — perfect for late-night studying.",
-    category: "Dorm",
-    condition: "Works great",
-    price: 8,
-    imageUrl: null,
-    seller: "Priya",
+    price: 140,
+    images: ["/listings/epiphone-sg.jpg"],
+    seller: "Sam",
     campus: "JSU",
     meetupSpot: "Walter Payton Center",
-    contact: { email: "priya@students.jsu.edu" },
+    contact: { groupme: "https://groupme.com/join_group/example" },
     status: "available",
-    postedAt: "2026-08-01",
+    postedAt: "2026-08-02",
   },
   {
-    id: "mini-fridge",
-    title: "Mini Fridge",
+    id: "snoopy-mug",
+    title: "Snoopy Lidded Mug",
     description:
-      "Compact mini fridge, cools well and runs quiet. Moving out, so it needs a new home.",
+      "Collectible ceramic Snoopy mug with a matching lid. Cute on a desk or shelf, no chips.",
     category: "Dorm",
-    condition: "Works great",
-    price: 45,
-    imageUrl: null,
-    seller: "Devon",
+    condition: "Good condition",
+    price: 12,
+    images: ["/listings/snoopy-mug.jpg"],
+    seller: "Nia",
     campus: "JSU",
-    meetupSpot: "Student Center",
-    contact: { instagram: "@devon.d", email: "devon@students.jsu.edu" },
-    status: "reserved",
-    postedAt: "2026-07-30",
+    meetupSpot: "Library",
+    contact: { instagram: "@nia.jsu" },
+    status: "available",
+    postedAt: "2026-08-03",
   },
   {
-    id: "psych-textbook",
-    title: "Intro to Psychology Textbook",
+    id: "duck-umbrella",
+    title: "Duck-Handle Compact Umbrella",
     description:
-      "Intro to Psychology, 4th edition. Minimal highlighting, cover in good shape.",
-    category: "Books",
-    condition: "Good condition",
-    price: 25,
-    imageUrl: null,
+      "Compact umbrella with a wooden duck-head handle and duck print. Auto open/close, barely used.",
+    category: "Dorm",
+    condition: "Like new",
+    price: 15,
+    images: ["/listings/duck-umbrella.jpg"],
     seller: "Aisha",
     campus: "JSU",
     meetupSpot: "Library",
     contact: { email: "aisha@students.jsu.edu" },
     status: "available",
-    postedAt: "2026-08-03",
+    postedAt: "2026-08-01",
   },
   {
-    id: "desk-chair",
-    title: "IKEA Desk Chair",
+    id: "soccer-art",
+    title: "Framed Soccer Art Print",
     description:
-      "Sturdy IKEA desk chair. Some wear on the seat but it rolls and adjusts fine.",
-    category: "Furniture",
-    condition: "Fair condition",
-    price: 30,
-    imageUrl: null,
-    seller: "Sam",
+      "Framed abstract print of a soccer legend. Brand new, still has the corner protectors. Great dorm wall piece.",
+    category: "Dorm",
+    condition: "Like new",
+    price: 25,
+    images: ["/listings/soccer-art.jpg"],
+    seller: "Jordan",
     campus: "JSU",
     meetupSpot: "Student Plaza",
     contact: { groupme: "https://groupme.com/join_group/example" },
     status: "sold",
-    postedAt: "2026-07-28",
-  },
-  {
-    id: "moveout-box",
-    title: "Move-out Box: Hangers & Mugs",
-    description:
-      "Free box of wire hangers and a few mugs. First come, first served — just take it off my hands.",
-    category: "Free",
-    condition: "Good condition",
-    price: 0,
-    imageUrl: null,
-    seller: "Nia",
-    campus: "JSU",
-    meetupSpot: "Walter Payton Center",
-    contact: { instagram: "@nia.jsu" },
-    status: "available",
-    postedAt: "2026-08-05",
+    postedAt: "2026-07-29",
   },
 ];
 

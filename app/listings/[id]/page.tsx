@@ -54,16 +54,18 @@ export default async function ListingPage({ params }: ListingPageProps) {
         </Link>
 
         <div className="grid gap-8 md:grid-cols-2">
-          {/* Photo (with the same pin motif as the cards) */}
-          <div className="relative overflow-hidden rounded-[14px] border border-line">
+          {/* Photo (with the same pin motif as the cards). self-start keeps the
+              box at the image's natural height instead of stretching to match
+              the details column. */}
+          <div className="relative self-start overflow-hidden rounded-[14px] border border-line">
             <span className="absolute left-3 top-3 z-10 flex size-[22px] items-center justify-center rounded-full bg-brick shadow-[0_2px_4px_rgba(0,0,0,0.2)]">
               <span className="size-1.5 rounded-full bg-paper-soft" />
             </span>
             <div className={`aspect-[4/3] w-full ${isAvailable ? "" : "opacity-60"}`}>
-              {listing.imageUrl ? (
+              {listing.images[0] ? (
                 // eslint-disable-next-line @next/next/no-img-element
                 <img
-                  src={listing.imageUrl}
+                  src={listing.images[0]}
                   alt={listing.title}
                   className="h-full w-full object-cover"
                 />

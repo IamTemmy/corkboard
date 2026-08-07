@@ -27,10 +27,10 @@ export function ListingCard({ listing }: { listing: Listing }) {
 
         {/* Photo — a real image once one exists, otherwise the placeholder */}
         <div className={`aspect-[4/3] w-full ${isAvailable ? "" : "opacity-60"}`}>
-          {listing.imageUrl ? (
+          {listing.images[0] ? (
             // eslint-disable-next-line @next/next/no-img-element
             <img
-              src={listing.imageUrl}
+              src={listing.images[0]}
               alt={listing.title}
               className="h-full w-full object-cover"
             />

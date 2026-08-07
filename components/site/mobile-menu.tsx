@@ -2,13 +2,21 @@
 
 import { useState } from "react";
 import Link from "next/link";
+import { SignOutButton } from "./sign-out-button";
 
 type NavLink = { label: string; href: string; kind: "scroll" | "page" };
 
 // The mobile-only header menu. On phones the nav links are hidden to keep the
 // header uncluttered; this hamburger button reveals them (plus the CTA) in a
 // dropdown. Shown under `sm` only — the desktop nav has the links inline.
-export function MobileMenu({ links }: { links: NavLink[] }) {
+// `authName` is the signed-in student's name, or null when logged out.
+export function MobileMenu({
+  links,
+  authName,
+}: {
+  links: NavLink[];
+  authName: string | null;
+}) {
   const [open, setOpen] = useState(false);
 
   const linkClass =
@@ -78,6 +86,26 @@ export function MobileMenu({ links }: { links: NavLink[] }) {
               Soon
             </span>
           </button>
+
+          {/* Auth: a Join link when logged out, or name + sign-out when in */}
+          <div className="mt-1 flex items-center justify-between border-t border-line px-2 pt-3">
+            {authName ? (
+              <>
+                <span className="text-sm text-ink/75">
+                  Hi, <span className="font-medium text-ink">{authName}</span>
+                </span>
+                <SignOutButton />
+              </>
+            ) : (
+              <Link
+                href="/join"
+                onClick={() => setOpen(false)}
+                className="text-sm font-medium text-ink/80 hover:text-ink"
+              >
+                Join
+              </Link>
+            )}
+          </div>
         </div>
       )}
     </div>

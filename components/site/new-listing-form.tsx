@@ -85,7 +85,7 @@ export function NewListingForm({
       .upload(path, file, { contentType: file.type });
     if (uploadError) {
       setSaving(false);
-      setError("Couldn't upload the photo — please try again.");
+      setError(`Couldn't upload the photo: ${uploadError.message}`);
       return;
     }
     const {
@@ -124,7 +124,7 @@ export function NewListingForm({
 
     if (insertError || !created) {
       setSaving(false);
-      setError("Couldn't post the listing — please try again.");
+      setError(`Couldn't post the listing: ${insertError?.message ?? "unknown error"}`);
       return;
     }
 

@@ -76,33 +76,32 @@ export function MobileMenu({
             ),
           )}
 
+          {/* Auth sits with the other links; signed-in shows name + sign-out */}
+          {authName ? (
+            <div className="flex items-center justify-between rounded-lg px-2 py-3">
+              <span className="text-sm text-ink/75">
+                Hi, <span className="font-medium text-ink">{authName}</span>
+              </span>
+              <SignOutButton />
+            </div>
+          ) : (
+            <Link
+              href="/join"
+              onClick={() => setOpen(false)}
+              className={linkClass}
+            >
+              Sign in
+            </Link>
+          )}
+
+          {/* Primary action last, set off with a little space */}
           <Link
             href="/new"
             onClick={() => setOpen(false)}
-            className="mt-1 flex items-center justify-center gap-2 rounded-lg bg-ink px-4 py-3 text-sm font-semibold text-paper"
+            className="mt-2 flex items-center justify-center rounded-lg bg-ink px-4 py-3 text-sm font-semibold text-paper"
           >
             + List an item
           </Link>
-
-          {/* Auth: a Join link when logged out, or name + sign-out when in */}
-          <div className="mt-1 flex items-center justify-between border-t border-line px-2 pt-3">
-            {authName ? (
-              <>
-                <span className="text-sm text-ink/75">
-                  Hi, <span className="font-medium text-ink">{authName}</span>
-                </span>
-                <SignOutButton />
-              </>
-            ) : (
-              <Link
-                href="/join"
-                onClick={() => setOpen(false)}
-                className="text-sm font-medium text-ink/80 hover:text-ink"
-              >
-                Sign in
-              </Link>
-            )}
-          </div>
         </div>
       )}
     </div>

@@ -53,9 +53,17 @@ export async function Nav() {
           reliable "back to a fresh homepage", even when you're already on it. */}
       <a
         href="/"
-        className="font-display text-[22px] font-semibold tracking-[-0.01em]"
+        className="flex items-center gap-2 font-display text-[22px] font-semibold tracking-[-0.01em]"
       >
-        cork<span className="text-marigold">board</span>
+        {/* The brand pin — the same mark as the pins on the listing cards. */}
+        <svg viewBox="0 0 32 32" className="size-7 shrink-0" fill="none" aria-hidden="true">
+          <rect width="32" height="32" rx="7" fill="#1C2430" />
+          <circle cx="16" cy="16" r="7" fill="#B24A34" />
+          <circle cx="16" cy="16" r="2.4" fill="#FBF8F2" />
+        </svg>
+        <span>
+          cork<span className="text-marigold">board</span>
+        </span>
       </a>
 
       {/* Center links — hidden on small screens to keep the mobile header clean */}

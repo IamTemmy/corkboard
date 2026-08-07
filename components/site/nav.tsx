@@ -25,7 +25,7 @@ export async function Nav() {
   const displayName = user?.email?.split("@")[0] ?? null;
 
   return (
-    <nav className="relative flex items-center justify-between border-b border-line bg-paper-soft px-6 py-5 sm:px-12">
+    <nav className="relative flex items-center justify-between border-b border-line bg-paper-soft px-6 py-5 sm:grid sm:grid-cols-[1fr_auto_1fr] sm:px-12">
       {/* Wordmark links home. A plain <a> (not next/link) forces a full page
           load, which resets any active search/filter — so clicking it is a
           reliable "back to a fresh homepage", even when you're already on it. */}
@@ -60,8 +60,9 @@ export async function Nav() {
       </div>
 
       {/* Desktop right cluster: auth state + CTA (hidden on phones — these move
-          into the mobile menu). */}
-      <div className="hidden items-center gap-5 sm:flex">
+          into the mobile menu). justify-end keeps it pinned to the right edge of
+          its grid column so the centre nav links stay truly page-centred. */}
+      <div className="hidden items-center gap-5 sm:flex sm:justify-end">
         {displayName ? (
           <span className="flex items-center gap-3 text-sm">
             <span className="text-ink/75">

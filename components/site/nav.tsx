@@ -3,6 +3,7 @@ import { buttonVariants } from "@/components/ui/button";
 import { cn } from "@/lib/utils";
 import { MobileMenu } from "./mobile-menu";
 import { AccountMenu } from "./account-menu";
+import { Tooltip } from "./tooltip";
 import { createClient } from "@/lib/supabase/server";
 import { jnumberOf } from "@/lib/identity";
 
@@ -87,6 +88,21 @@ export async function Nav() {
           into the mobile menu). justify-end keeps it pinned to the right edge of
           its grid column so the centre nav links stay truly page-centred. */}
       <div className="hidden items-center gap-4 sm:flex sm:justify-end">
+        {/* CTA first, then the auth control in the far-right corner (where people
+            reflexively look for their account). Signed-out students land on /join
+            first — the /new page guards it. */}
+        <Tooltip label="Post something to sell" side="bottom">
+          <Link
+            href="/new"
+            className={cn(
+              buttonVariants(),
+              "h-auto rounded-lg px-4 py-2.5 text-sm font-semibold",
+            )}
+          >
+            + List an item
+          </Link>
+        </Tooltip>
+
         {displayName ? (
           <AccountMenu name={displayName} />
         ) : (
@@ -97,18 +113,6 @@ export async function Nav() {
             Sign in
           </Link>
         )}
-
-        {/* Signed-out students land on /join first (the page guards it). */}
-        <Link
-          href="/new"
-          title="Post something to sell"
-          className={cn(
-            buttonVariants(),
-            "h-auto rounded-lg px-4 py-2.5 text-sm font-semibold",
-          )}
-        >
-          + List an item
-        </Link>
       </div>
 
       {/* Phone-only hamburger holding the same links + CTA */}

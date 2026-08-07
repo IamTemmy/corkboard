@@ -4,6 +4,7 @@ import { useState } from "react";
 import Link from "next/link";
 import { useRouter } from "next/navigation";
 import { createClient } from "@/lib/supabase/client";
+import { Tooltip } from "./tooltip";
 import { formatPrice } from "@/lib/listings";
 import type { Listing, ListingStatus } from "@/lib/listings";
 
@@ -114,47 +115,51 @@ export function MyListings({ listings }: { listings: Listing[] }) {
 
               <div className="flex flex-wrap gap-2">
                 {l.status !== "available" && (
-                  <button
-                    type="button"
-                    disabled={busy}
-                    onClick={() => setStatus(l.id, "available")}
-                    title="Put it back on the board as available"
-                    className={neutralBtn}
-                  >
-                    {l.status === "sold" ? "Relist" : "Mark available"}
-                  </button>
+                  <Tooltip label="Put it back on the board as available">
+                    <button
+                      type="button"
+                      disabled={busy}
+                      onClick={() => setStatus(l.id, "available")}
+                      className={neutralBtn}
+                    >
+                      {l.status === "sold" ? "Relist" : "Mark available"}
+                    </button>
+                  </Tooltip>
                 )}
                 {l.status === "available" && (
-                  <button
-                    type="button"
-                    disabled={busy}
-                    onClick={() => setStatus(l.id, "reserved")}
-                    title="Hold it for a buyer — stays visible, but contact is hidden"
-                    className={neutralBtn}
-                  >
-                    Mark reserved
-                  </button>
+                  <Tooltip label="Hold it for a buyer — stays visible, but contact is hidden">
+                    <button
+                      type="button"
+                      disabled={busy}
+                      onClick={() => setStatus(l.id, "reserved")}
+                      className={neutralBtn}
+                    >
+                      Mark reserved
+                    </button>
+                  </Tooltip>
                 )}
                 {l.status !== "sold" && (
+                  <Tooltip label="It sold — leaves the board, kept here in your history">
+                    <button
+                      type="button"
+                      disabled={busy}
+                      onClick={() => setStatus(l.id, "sold")}
+                      className={soldBtn}
+                    >
+                      Mark sold
+                    </button>
+                  </Tooltip>
+                )}
+                <Tooltip label="Remove permanently — use “Mark sold” if it actually sold">
                   <button
                     type="button"
                     disabled={busy}
-                    onClick={() => setStatus(l.id, "sold")}
-                    title="It sold — leaves the board, kept here in your history"
-                    className={soldBtn}
+                    onClick={() => remove(l.id)}
+                    className={dangerBtn}
                   >
-                    Mark sold
+                    Delete
                   </button>
-                )}
-                <button
-                  type="button"
-                  disabled={busy}
-                  onClick={() => remove(l.id)}
-                  title="Remove permanently — use “Mark sold” if it actually sold"
-                  className={dangerBtn}
-                >
-                  Delete
-                </button>
+                </Tooltip>
               </div>
             </div>
           </li>

@@ -45,7 +45,11 @@ export function ListingCard({ listing }: { listing: Listing }) {
         </div>
 
         <div className="px-4 pb-4 pt-3.5">
-          <h3 className="mb-1 text-[15px] font-semibold">{listing.title}</h3>
+          {/* Reserve two lines so every card is the same height regardless of
+              title length; longer titles clamp with an ellipsis. */}
+          <h3 className="mb-1 line-clamp-2 min-h-[2.75rem] text-[15px] font-semibold leading-snug">
+            {listing.title}
+          </h3>
           <p className="mb-2.5 text-xs text-ink/55">
             {listing.category} · {listing.condition}
           </p>

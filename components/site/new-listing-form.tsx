@@ -3,6 +3,7 @@
 import { useState } from "react";
 import { useRouter } from "next/navigation";
 import { createClient } from "@/lib/supabase/client";
+import { processImageForUpload } from "@/lib/image";
 import { Button } from "@/components/ui/button";
 import {
   LISTING_CATEGORIES,
@@ -10,7 +11,9 @@ import {
   MEETUP_SPOTS,
 } from "@/lib/listings";
 
-const MAX_IMAGE_BYTES = 5 * 1024 * 1024; // 5 MB
+// Generous cap on the RAW pick — we downscale/compress before upload, so the
+// stored file ends up small regardless. (Phone photos, esp. HEIC, run large.)
+const MAX_IMAGE_BYTES = 25 * 1024 * 1024; // 25 MB
 
 const fieldClass =
   "w-full rounded-lg border border-line bg-paper px-4 py-3 text-ink outline-none transition placeholder:text-ink/40 focus:border-marigold focus:ring-2 focus:ring-marigold/30";
@@ -40,24 +43,35 @@ export function NewListingForm({
 
   const [file, setFile] = useState<File | null>(null);
   const [previewUrl, setPreviewUrl] = useState<string | null>(null);
+  const [processing, setProcessing] = useState(false);
 
   const [saving, setSaving] = useState(false);
   const [error, setError] = useState<string | null>(null);
 
-  function onPickImage(e: React.ChangeEvent<HTMLInputElement>) {
+  async function onPickImage(e: React.ChangeEvent<HTMLInputElement>) {
     const picked = e.target.files?.[0] ?? null;
     setError(null);
     if (!picked) return;
-    if (!picked.type.startsWith("image/")) {
-      setError("Please choose an image file.");
-      return;
-    }
     if (picked.size > MAX_IMAGE_BYTES) {
-      setError("That image is over 5 MB — please pick a smaller one.");
+      setError("That photo is over 25 MB — please pick a smaller one.");
       return;
     }
-    setFile(picked);
-    setPreviewUrl(URL.createObjectURL(picked));
+    // Convert HEIC → JPEG (if needed) and downscale/compress before upload.
+    setProcessing(true);
+    try {
+      const processed = await processImageForUpload(picked);
+      setFile(processed);
+      setPreviewUrl((prev) => {
+        if (prev) URL.revokeObjectURL(prev);
+        return URL.createObjectURL(processed);
+      });
+    } catch {
+      setError("Couldn't read that photo — try a different one.");
+      setFile(null);
+      setPreviewUrl(null);
+    } finally {
+      setProcessing(false);
+    }
   }
 
   async function onSubmit(e: React.FormEvent) {
@@ -137,7 +151,7 @@ export function NewListingForm({
       {/* Photo */}
       <div className="flex flex-col gap-1.5">
         <span className="text-sm font-medium text-ink/80">Photo</span>
-        <label className="flex aspect-[4/5] max-w-xs cursor-pointer items-center justify-center overflow-hidden rounded-xl border border-dashed border-line bg-paper-soft text-center transition hover:border-ink/30">
+        <label className="relative flex aspect-[4/5] max-w-xs cursor-pointer items-center justify-center overflow-hidden rounded-xl border border-dashed border-line bg-paper-soft text-center transition hover:border-ink/30">
           {previewUrl ? (
             // eslint-disable-next-line @next/next/no-img-element
             <img src={previewUrl} alt="" className="size-full object-cover" />
@@ -145,12 +159,19 @@ export function NewListingForm({
             <span className="px-4 text-sm text-ink/50">
               Tap to add a photo
               <br />
-              <span className="text-xs">JPG or PNG, up to 5 MB</span>
+              <span className="text-xs">
+                JPG, PNG, or HEIC — optimized automatically
+              </span>
+            </span>
+          )}
+          {processing && (
+            <span className="absolute inset-0 flex items-center justify-center bg-paper-soft/85 text-sm font-medium text-ink/70">
+              Processing photo…
             </span>
           )}
           <input
             type="file"
-            accept="image/*"
+            accept="image/*,.heic,.heif"
             onChange={onPickImage}
             className="hidden"
           />
@@ -325,7 +346,7 @@ export function NewListingForm({
 
       <Button
         type="submit"
-        disabled={saving}
+        disabled={saving || processing}
         className="h-auto w-full rounded-lg py-3 text-sm font-semibold sm:w-auto sm:self-start sm:px-8"
       >
         {saving ? "Posting…" : "Post listing"}

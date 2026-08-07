@@ -6,7 +6,7 @@ import { JoinForm } from "@/components/site/join-form";
 import { createClient } from "@/lib/supabase/server";
 
 export const metadata: Metadata = {
-  title: "Join — Corkboard",
+  title: "Sign in — Corkboard",
   description: "Sign in with your school email to buy and sell on Corkboard.",
 };
 

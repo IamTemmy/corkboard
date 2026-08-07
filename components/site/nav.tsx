@@ -87,7 +87,7 @@ export async function Nav() {
             href="/join"
             className="text-sm font-medium text-ink/75 transition-colors hover:text-ink"
           >
-            Join
+            Sign in
           </Link>
         )}
 

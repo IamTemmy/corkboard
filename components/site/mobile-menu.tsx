@@ -102,7 +102,7 @@ export function MobileMenu({
                 onClick={() => setOpen(false)}
                 className="text-sm font-medium text-ink/80 hover:text-ink"
               >
-                Join
+                Sign in
               </Link>
             )}
           </div>

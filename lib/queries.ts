@@ -17,6 +17,7 @@ type ListingRow = {
   contact: SellerContact | null;
   status: ListingStatus;
   seller_id: string | null;
+  sold_at: string | null;
 };
 
 // Translate a database row into the app's Listing shape (camelCase).
@@ -36,19 +37,38 @@ function mapRow(row: ListingRow): Listing {
     contact: row.contact ?? {},
     status: row.status,
     postedAt: row.created_at,
+    soldAt: row.sold_at ?? null,
   };
 }
 
-/** All listings, newest first. */
+/** Listings for the public board — available + reserved, newest first (sold
+ *  items leave the grid; they live on in the seller's "My Listings"). */
 export async function getListings(): Promise<Listing[]> {
   const supabase = await createClient();
   const { data, error } = await supabase
     .from("listings")
     .select("*")
+    .neq("status", "sold")
     .order("created_at", { ascending: false });
 
   if (error) {
     console.error("Failed to load listings:", error.message);
+    return [];
+  }
+  return (data as ListingRow[]).map(mapRow);
+}
+
+/** Every listing owned by a given account (all statuses), newest first. */
+export async function getListingsBySeller(sellerId: string): Promise<Listing[]> {
+  const supabase = await createClient();
+  const { data, error } = await supabase
+    .from("listings")
+    .select("*")
+    .eq("seller_id", sellerId)
+    .order("created_at", { ascending: false });
+
+  if (error) {
+    console.error("Failed to load seller listings:", error.message);
     return [];
   }
   return (data as ListingRow[]).map(mapRow);

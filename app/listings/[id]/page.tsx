@@ -142,7 +142,9 @@ export default async function ListingPage({ params }: ListingPageProps) {
               />
             ) : (
               <p className="mt-6 rounded-[12px] border border-dashed border-line px-4 py-4 text-sm text-ink/60">
-                This item is {listing.status} and is no longer available.
+                {listing.status === "reserved"
+                  ? "Reserved — the seller has agreed to sell this to another buyer. If that falls through, it may become available again."
+                  : "This item has sold."}
               </p>
             )}
           </div>

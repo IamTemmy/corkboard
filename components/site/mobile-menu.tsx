@@ -78,12 +78,21 @@ export function MobileMenu({
 
           {/* Auth sits with the other links; signed-in shows name + sign-out */}
           {authName ? (
-            <div className="flex items-center justify-between rounded-lg px-2 py-3">
-              <span className="text-sm text-ink/75">
-                Hi, <span className="font-medium text-ink">{authName}</span>
-              </span>
-              <SignOutButton />
-            </div>
+            <>
+              <Link
+                href="/my-listings"
+                onClick={() => setOpen(false)}
+                className={linkClass}
+              >
+                My listings
+              </Link>
+              <div className="flex items-center justify-between rounded-lg px-2 py-3">
+                <span className="text-sm text-ink/75">
+                  Hi, <span className="font-medium text-ink">{authName}</span>
+                </span>
+                <SignOutButton />
+              </div>
+            </>
           ) : (
             <Link
               href="/join"

@@ -77,7 +77,13 @@ export async function Nav() {
           its grid column so the centre nav links stay truly page-centred. */}
       <div className="hidden items-center gap-5 sm:flex sm:justify-end">
         {displayName ? (
-          <span className="flex items-center gap-3 text-sm">
+          <span className="flex items-center gap-4 text-sm">
+            <Link
+              href="/my-listings"
+              className="font-medium text-ink/75 transition-colors hover:text-ink"
+            >
+              My listings
+            </Link>
             <span className="text-ink/75">
               Hi, <span className="font-medium text-ink">{displayName}</span>
             </span>

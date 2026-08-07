@@ -59,6 +59,8 @@ export type Listing = {
   status: ListingStatus;
   /** ISO date the item was posted. */
   postedAt: string;
+  /** ISO date the item was marked sold, or null. */
+  soldAt: string | null;
 };
 
 /** Formats a listing price for display: `$60`, or `Free` when price is 0. */

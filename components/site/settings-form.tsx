@@ -45,19 +45,36 @@ export function SettingsForm({
     setError(null);
 
     const supabase = createClient();
-    const { error } = await supabase
+    const name = displayName.trim();
+    // What shows publicly as the seller name (falls back to the J-number).
+    const displayValue = name || jnumber;
+
+    const { error: profileError } = await supabase
       .from("profiles")
       .update({
         // Blank name → null, which falls back to the J-number in the UI.
-        display_name: displayName.trim() || null,
+        display_name: name || null,
         instagram: instagram.trim().replace(/^@/, "") || null,
         groupme: groupme.trim() || null,
       })
       .eq("id", userId);
 
-    setSaving(false);
-    if (error) {
+    if (profileError) {
+      setSaving(false);
       setError("Couldn't save — please try again.");
+      return;
+    }
+
+    // The seller name is snapshotted onto each listing, so sync existing ones to
+    // the new name — that's what makes a name change show up everywhere.
+    const { error: listingsError } = await supabase
+      .from("listings")
+      .update({ seller: displayValue })
+      .eq("seller_id", userId);
+
+    setSaving(false);
+    if (listingsError) {
+      setError("Saved your profile, but couldn't update your listings' name — try again.");
       return;
     }
     setSaved(true);

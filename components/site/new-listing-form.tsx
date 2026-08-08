@@ -2,9 +2,11 @@
 
 import { useState } from "react";
 import { useRouter } from "next/navigation";
+import Link from "next/link";
 import { createClient } from "@/lib/supabase/client";
 import { processImageForUpload } from "@/lib/image";
 import { isValidGroupme } from "@/lib/contact";
+import { LISTING_ACKNOWLEDGMENT } from "@/lib/guidelines";
 import { Button } from "@/components/ui/button";
 import {
   LISTING_CATEGORIES,
@@ -42,6 +44,7 @@ export function NewListingForm({
   const [description, setDescription] = useState("");
   const [instagram, setInstagram] = useState(initialInstagram);
   const [groupme, setGroupme] = useState(initialGroupme);
+  const [acknowledged, setAcknowledged] = useState(false);
 
   // A listing can have several photos; the first is the cover.
   const [images, setImages] = useState<{ file: File; previewUrl: string }[]>([]);
@@ -124,6 +127,11 @@ export function NewListingForm({
       ...(ig ? { instagram: ig } : {}),
       ...(gm ? { groupme: gm } : {}),
     };
+    // Every seller confirms the item is theirs and allowed before it goes live.
+    if (!acknowledged) {
+      setError("Please confirm your item follows the community guidelines.");
+      return;
+    }
 
     setSaving(true);
     const supabase = createClient();
@@ -410,6 +418,31 @@ export function NewListingForm({
             />
           </label>
         </div>
+      </div>
+
+      {/* Guidelines reminder + acknowledgment — keeps banned items off the board */}
+      <div className="rounded-xl border border-line bg-paper-soft p-4">
+        <p className="text-sm text-ink/70">
+          Corkboard doesn&apos;t allow weapons, drugs, alcohol, stolen or
+          counterfeit goods, and a few other things. Take a moment to skim the{" "}
+          <Link
+            href="/guidelines"
+            target="_blank"
+            className="font-medium text-ink underline underline-offset-4 hover:text-brick"
+          >
+            community guidelines
+          </Link>
+          .
+        </p>
+        <label className="mt-3 flex cursor-pointer items-start gap-2.5 text-sm text-ink/80">
+          <input
+            type="checkbox"
+            checked={acknowledged}
+            onChange={(e) => setAcknowledged(e.target.checked)}
+            className="mt-0.5"
+          />
+          <span>{LISTING_ACKNOWLEDGMENT}</span>
+        </label>
       </div>
 
       {error && <p className="text-sm text-brick">{error}</p>}

@@ -5,6 +5,7 @@ import { Footer } from "@/components/site/footer";
 import { ListingCard } from "@/components/site/listing-card";
 import { ListingGallery } from "@/components/site/listing-gallery";
 import { ContactSeller } from "@/components/site/contact-seller";
+import { ReportListing } from "@/components/site/report-listing";
 import { formatPostedAt, formatPrice } from "@/lib/listings";
 import { getListingById, getListings } from "@/lib/queries";
 import { createClient } from "@/lib/supabase/server";
@@ -133,6 +134,9 @@ export default async function ListingPage({ params }: ListingPageProps) {
                   : "This item has sold."}
               </p>
             )}
+
+            {/* Report — signed-in students can flag listings that break the rules */}
+            <ReportListing listingId={listing.id} reporterId={user?.id ?? null} />
           </div>
         </div>
 

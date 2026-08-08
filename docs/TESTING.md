@@ -54,6 +54,15 @@ a second account (Student B) against Student A's listing:
 - ⬜ B cannot UPDATE A's profile
 - ⬜ anon (no session) cannot INSERT/UPDATE/DELETE any listing
 
+### Trust & safety (Stage 4)
+- ⬜ `/guidelines` lists prohibited items + community rules; linked from the footer
+- ⬜ Listing form blocks posting until the "follows the guidelines" box is ticked
+- ⬜ Signed-out visitor sees "Sign in to report"; signed-in sees the report form
+- ⬜ Submitting a report inserts a row (visible in the Supabase dashboard)
+- ⬜ Reporting the same listing twice shows the thank-you, doesn't error (dedup)
+- ⬜ Reports are NOT readable via the client API — only in the dashboard (RLS)
+- ⬜ B can report A's listing; the row's reporter_id is B (attacker/RLS check)
+
 ---
 
 ## Deployment test log

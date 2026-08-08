@@ -5,6 +5,7 @@ import Link from "next/link";
 import { useRouter } from "next/navigation";
 import { createClient } from "@/lib/supabase/client";
 import { Tooltip } from "./tooltip";
+import { ConfirmDialog } from "./confirm-dialog";
 import { formatPrice } from "@/lib/listings";
 import type { Listing, ListingStatus } from "@/lib/listings";
 
@@ -90,6 +91,8 @@ export function MyListings({ listings }: { listings: Listing[] }) {
   const [busyId, setBusyId] = useState<string | null>(null);
   const [openMenuId, setOpenMenuId] = useState<string | null>(null);
   const [copiedId, setCopiedId] = useState<string | null>(null);
+  // The listing awaiting delete confirmation (null = the dialog is closed).
+  const [pendingDelete, setPendingDelete] = useState<Listing | null>(null);
 
   // Close the ⋮ menu on an outside click.
   useEffect(() => {
@@ -129,11 +132,10 @@ export function MyListings({ listings }: { listings: Listing[] }) {
     setBusyId(null);
   }
 
-  async function remove(listing: Listing) {
-    const ok = window.confirm(
-      "Delete this listing? This can't be undone. If it sold, use “Mark sold” instead so it stays in your history.",
-    );
-    if (!ok) return;
+  // Runs after the styled ConfirmDialog is accepted.
+  async function confirmDelete() {
+    const listing = pendingDelete;
+    if (!listing) return;
     setBusyId(listing.id);
     const supabase = createClient();
 
@@ -147,6 +149,7 @@ export function MyListings({ listings }: { listings: Listing[] }) {
     }
 
     await supabase.from("listings").delete().eq("id", listing.id);
+    setPendingDelete(null);
     router.refresh();
     setBusyId(null);
   }
@@ -164,6 +167,7 @@ export function MyListings({ listings }: { listings: Listing[] }) {
   }
 
   return (
+    <>
     <ul className="flex flex-col gap-4">
       {listings.map((l) => {
         const busy = busyId === l.id;
@@ -291,7 +295,7 @@ export function MyListings({ listings }: { listings: Listing[] }) {
                   <button
                     type="button"
                     disabled={busy}
-                    onClick={() => remove(l)}
+                    onClick={() => setPendingDelete(l)}
                     className={deleteBtn}
                   >
                     <DeleteIcon />
@@ -304,5 +308,20 @@ export function MyListings({ listings }: { listings: Listing[] }) {
         );
       })}
     </ul>
+
+      <ConfirmDialog
+        open={pendingDelete !== null}
+        title="Delete this listing?"
+        confirmLabel="Delete listing"
+        busyLabel="Deleting…"
+        destructive
+        busy={busyId !== null && busyId === pendingDelete?.id}
+        onConfirm={confirmDelete}
+        onCancel={() => setPendingDelete(null)}
+      >
+        This permanently removes the listing. If the item sold, mark it sold
+        instead so it stays in your history.
+      </ConfirmDialog>
+    </>
   );
 }

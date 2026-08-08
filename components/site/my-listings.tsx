@@ -29,14 +29,56 @@ const statusLabel: Record<ListingStatus, string> = {
   sold: "Sold",
 };
 
-// Matched set: same height/shape, distinct-but-consistent hover fills (soft grey
-// for neutral, a visible lightening for the dark "sold", soft red for delete).
-const neutralBtn =
-  "rounded-lg border border-line px-3.5 py-2 text-xs font-medium text-ink/80 transition-colors hover:border-ink/20 hover:bg-ink/5 hover:text-ink disabled:opacity-50";
-const soldBtn =
-  "rounded-lg bg-ink px-3.5 py-2 text-xs font-semibold text-paper transition-colors hover:bg-ink/85 disabled:opacity-50";
-const dangerBtn =
-  "rounded-lg px-3.5 py-2 text-xs font-medium text-brick transition-colors hover:bg-brick/10 disabled:opacity-50";
+// Each action reads as its own thing — distinct by icon AND a palette colour
+// (neutral edit, marigold reserve, dark-ink sold, brick delete). No off-palette
+// blue; everything stays within Corkboard's tokens.
+const baseBtn =
+  "inline-flex items-center gap-1.5 rounded-lg px-3 py-2 text-xs font-medium transition-colors disabled:opacity-50";
+const neutralBtn = `${baseBtn} border border-line text-ink/80 hover:border-ink/25 hover:bg-ink/5 hover:text-ink`;
+const reservedBtn = `${baseBtn} border border-marigold/45 text-ink/80 hover:border-marigold/70 hover:bg-marigold/10`;
+const soldBtn = `${baseBtn} bg-ink font-semibold text-paper hover:bg-ink/85`;
+const dangerBtn = `${baseBtn} text-brick hover:bg-brick/10`;
+
+const iconClass = "size-3.5 shrink-0";
+const svgProps = {
+  viewBox: "0 0 24 24",
+  fill: "none",
+  stroke: "currentColor",
+  strokeWidth: "2",
+  strokeLinecap: "round" as const,
+  strokeLinejoin: "round" as const,
+  "aria-hidden": true,
+};
+
+const EditIcon = () => (
+  <svg {...svgProps} className={iconClass}>
+    <path d="M12 20h9" />
+    <path d="M16.5 3.5a2.12 2.12 0 0 1 3 3L7 19l-4 1 1-4Z" />
+  </svg>
+);
+const ReserveIcon = () => (
+  <svg {...svgProps} className={`${iconClass} text-marigold`}>
+    <path d="M19 21l-7-5-7 5V5a2 2 0 0 1 2-2h10a2 2 0 0 1 2 2z" />
+  </svg>
+);
+const RelistIcon = () => (
+  <svg {...svgProps} className={iconClass}>
+    <path d="M3 3v5h5" />
+    <path d="M3.05 13A9 9 0 1 0 6 5.3L3 8" />
+  </svg>
+);
+const SoldIcon = () => (
+  <svg {...svgProps} className={iconClass}>
+    <path d="M20 6 9 17l-5-5" />
+  </svg>
+);
+const DeleteIcon = () => (
+  <svg {...svgProps} className={iconClass}>
+    <path d="M3 6h18" />
+    <path d="M8 6V4a2 2 0 0 1 2-2h4a2 2 0 0 1 2 2v2" />
+    <path d="M19 6v14a2 2 0 0 1-2 2H7a2 2 0 0 1-2-2V6" />
+  </svg>
+);
 
 export function MyListings({ listings }: { listings: Listing[] }) {
   const router = useRouter();
@@ -135,6 +177,7 @@ export function MyListings({ listings }: { listings: Listing[] }) {
               <div className="flex flex-wrap gap-2">
                 <Tooltip label="Edit this listing's details">
                   <Link href={`/listings/${l.id}/edit`} className={neutralBtn}>
+                    <EditIcon />
                     Edit
                   </Link>
                 </Tooltip>
@@ -146,6 +189,7 @@ export function MyListings({ listings }: { listings: Listing[] }) {
                       onClick={() => setStatus(l.id, "available")}
                       className={neutralBtn}
                     >
+                      <RelistIcon />
                       {l.status === "sold" ? "Relist" : "Mark available"}
                     </button>
                   </Tooltip>
@@ -156,8 +200,9 @@ export function MyListings({ listings }: { listings: Listing[] }) {
                       type="button"
                       disabled={busy}
                       onClick={() => setStatus(l.id, "reserved")}
-                      className={neutralBtn}
+                      className={reservedBtn}
                     >
+                      <ReserveIcon />
                       Mark reserved
                     </button>
                   </Tooltip>
@@ -170,6 +215,7 @@ export function MyListings({ listings }: { listings: Listing[] }) {
                       onClick={() => setStatus(l.id, "sold")}
                       className={soldBtn}
                     >
+                      <SoldIcon />
                       Mark sold
                     </button>
                   </Tooltip>
@@ -181,6 +227,7 @@ export function MyListings({ listings }: { listings: Listing[] }) {
                     onClick={() => remove(l)}
                     className={dangerBtn}
                   >
+                    <DeleteIcon />
                     Delete
                   </button>
                 </Tooltip>

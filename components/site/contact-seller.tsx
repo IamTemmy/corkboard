@@ -1,6 +1,7 @@
 import Link from "next/link";
 import { buttonVariants } from "@/components/ui/button";
 import { cn } from "@/lib/utils";
+import { groupmeHref } from "@/lib/contact";
 import type { SellerContact } from "@/lib/listings";
 
 // The seller's contact details are the payoff of verification: they're shown
@@ -22,12 +23,13 @@ function buildChannels(contact: SellerContact): Channel[] {
     });
   }
   if (contact.groupme) {
-    const isUrl = /^https?:\/\//i.test(contact.groupme);
+    // Only a real groupme.com link is clickable; anything else shows as text.
+    const href = groupmeHref(contact.groupme);
     channels.push({
       label: "GroupMe",
-      display: isUrl ? "Open group" : contact.groupme,
-      href: isUrl ? contact.groupme : undefined,
-      external: isUrl,
+      display: href ? "Open group" : contact.groupme,
+      href: href ?? undefined,
+      external: Boolean(href),
     });
   }
   if (contact.email) {

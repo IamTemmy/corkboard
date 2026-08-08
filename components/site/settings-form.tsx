@@ -3,6 +3,7 @@
 import { useState } from "react";
 import { useRouter } from "next/navigation";
 import { createClient } from "@/lib/supabase/client";
+import { isValidGroupme } from "@/lib/contact";
 import { Button } from "@/components/ui/button";
 
 const fieldClass =
@@ -41,9 +42,14 @@ export function SettingsForm({
 
   async function onSubmit(e: React.FormEvent) {
     e.preventDefault();
-    setSaving(true);
     setError(null);
 
+    if (!isValidGroupme(groupme)) {
+      setError("Enter a valid GroupMe link (groupme.com/…) or leave it blank.");
+      return;
+    }
+
+    setSaving(true);
     const supabase = createClient();
     const name = displayName.trim();
     // What shows publicly as the seller name (falls back to the J-number).

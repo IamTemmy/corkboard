@@ -4,6 +4,7 @@ import { useState } from "react";
 import { useRouter } from "next/navigation";
 import { createClient } from "@/lib/supabase/client";
 import { processImageForUpload } from "@/lib/image";
+import { isValidGroupme } from "@/lib/contact";
 import { Button } from "@/components/ui/button";
 import {
   LISTING_CATEGORIES,
@@ -105,6 +106,10 @@ export function NewListingForm({
     const priceValue = isFree ? 0 : Number(price);
     if (!isFree && (!Number.isFinite(priceValue) || priceValue < 0)) {
       setError("Enter a valid price (or mark it free).");
+      return;
+    }
+    if (!isValidGroupme(groupme)) {
+      setError("Enter a valid GroupMe link (groupme.com/…) or leave it blank.");
       return;
     }
 

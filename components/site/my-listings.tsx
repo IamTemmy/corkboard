@@ -8,6 +8,15 @@ import { Tooltip } from "./tooltip";
 import { formatPrice } from "@/lib/listings";
 import type { Listing, ListingStatus } from "@/lib/listings";
 
+// Extract the in-bucket path (e.g. "<uid>/<file>.jpg") from a public Storage
+// URL, so the object can be deleted with the listing. Non-Storage images (the
+// legacy demo rows point at /public files) have no marker and are skipped.
+function imageStoragePath(publicUrl: string): string | null {
+  const marker = "/listing-images/";
+  const i = publicUrl.indexOf(marker);
+  return i === -1 ? null : publicUrl.slice(i + marker.length);
+}
+
 const statusStyles: Record<ListingStatus, string> = {
   available: "bg-moss/12 text-moss",
   reserved: "bg-marigold/20 text-ink",
@@ -46,14 +55,24 @@ export function MyListings({ listings }: { listings: Listing[] }) {
     setBusyId(null);
   }
 
-  async function remove(id: string) {
+  async function remove(listing: Listing) {
     const ok = window.confirm(
       "Delete this listing? This can't be undone. If it sold, use “Mark sold” instead so it stays in your history.",
     );
     if (!ok) return;
-    setBusyId(id);
+    setBusyId(listing.id);
     const supabase = createClient();
-    await supabase.from("listings").delete().eq("id", id);
+
+    // Delete the photos from Storage first so they don't orphan (best-effort;
+    // the paths live in the user's own folder, which their RLS policy allows).
+    const paths = listing.images
+      .map(imageStoragePath)
+      .filter((p): p is string => p !== null);
+    if (paths.length > 0) {
+      await supabase.storage.from("listing-images").remove(paths);
+    }
+
+    await supabase.from("listings").delete().eq("id", listing.id);
     router.refresh();
     setBusyId(null);
   }
@@ -154,7 +173,7 @@ export function MyListings({ listings }: { listings: Listing[] }) {
                   <button
                     type="button"
                     disabled={busy}
-                    onClick={() => remove(l.id)}
+                    onClick={() => remove(l)}
                     className={dangerBtn}
                   >
                     Delete

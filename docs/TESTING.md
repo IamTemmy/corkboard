@@ -22,7 +22,8 @@ Legend: ✅ passing · ❌ failing · ⬜ not yet tested
 - ✅ Create a listing with details + photo
 - ✅ Multiple photos (up to 5), first = cover, removable
 - ✅ iPhone HEIC photo converts and displays; large photos compress
-- ⬜ Edit an existing listing (feature pending — Stage 3)
+- ⬜ Edit a listing's details (title/price/category/condition/spot/description) — saved, reflected on the listing and board (Stage 3)
+- ⬜ A non-owner cannot open /listings/&lt;id&gt;/edit (redirected) (Stage 3)
 - ✅ Mark reserved → stays on board with badge, no contact shown
 - ✅ Mark sold → leaves the public board, stays in My Listings
 - ✅ Mark available / Relist → returns to the board
@@ -31,17 +32,18 @@ Legend: ✅ passing · ❌ failing · ⬜ not yet tested
 
 ### Marketplace (buyer)
 - ✅ Sold items are absent from the board; reserved remain visible
+- ⬜ "Free" chip shows $0 items (Stage 3)
 - ✅ Available item shows contact to a signed-in student
 - ⬜ GroupMe: only real groupme.com links are clickable; junk is rejected on save (Stage 1)
 
 ### Identity & contact
 - ✅ Display name change updates the header and existing listings
 - ✅ Clearing the name falls back to the J-number everywhere
-- ⬜ School email is never shown as a public contact, even to a signed-in buyer (Stage 2)
-- ⬜ Publishing requires at least one contact (Instagram or GroupMe) (Stage 2)
-- ⬜ Changing contact in Settings propagates to existing listings (Stage 2)
-- ⬜ With active listings, Settings blocks clearing all contact (Stage 2)
-- ⬜ A signed-in student querying `profiles` gets only their own row (Stage 2, after 006)
+- ✅ School email is never shown as a public contact, even to a signed-in buyer (Stage 2)
+- ✅ Publishing requires at least one contact (Instagram or GroupMe) (Stage 2)
+- ✅ Changing contact in Settings propagates to existing listings (Stage 2)
+- ✅ With active listings, Settings blocks clearing all contact (Stage 2)
+- ⬜ A signed-in student querying `profiles` gets only their own row (verify via the attacker/RLS tests)
 
 ### Security — test as an attacker (not just the happy path)
 These must be rejected by the **database**, not just hidden in the UI. Test with
@@ -61,3 +63,5 @@ Record what was verified against production after each deploy.
 | Date | Change deployed | Tested | Result |
 | --- | --- | --- | --- |
 | 2026-08-07 | Full auth + listing loop | End-to-end: sign in, list w/ photo, contact shows, sold leaves board | ✅ |
+| 2026-08-07 | Stage 1: GroupMe validation + storage cleanup | Junk GroupMe link rejected; groupme.com accepted | ✅ |
+| 2026-08-07 | Stage 2: email private, profiles locked, contact required | Email hidden from contact; publish needs a contact; contact propagates from Settings; can't clear all contact with active listings | ✅ |

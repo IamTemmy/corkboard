@@ -17,7 +17,13 @@ export function Marketplace({ listings }: { listings: Listing[] }) {
 
   const q = query.trim().toLowerCase();
   const visibleListings = listings.filter((listing) => {
-    const matchesCategory = category === "All" || listing.category === category;
+    // "Free" is a price state, not a real category — filter it by price.
+    const matchesCategory =
+      category === "All"
+        ? true
+        : category === "Free"
+          ? listing.price === 0
+          : listing.category === category;
     const matchesQuery =
       q === "" ||
       listing.title.toLowerCase().includes(q) ||

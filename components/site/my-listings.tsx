@@ -133,6 +133,11 @@ export function MyListings({ listings }: { listings: Listing[] }) {
               </div>
 
               <div className="flex flex-wrap gap-2">
+                <Tooltip label="Edit this listing's details">
+                  <Link href={`/listings/${l.id}/edit`} className={neutralBtn}>
+                    Edit
+                  </Link>
+                </Tooltip>
                 {l.status !== "available" && (
                   <Tooltip label="Put it back on the board as available">
                     <button

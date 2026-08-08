@@ -26,6 +26,12 @@ export default async function SettingsPage() {
     .eq("id", user.id)
     .maybeSingle();
 
+  // Whether the user has any listings — if so, they can't clear all contact.
+  const { count: listingCount } = await supabase
+    .from("listings")
+    .select("id", { count: "exact", head: true })
+    .eq("seller_id", user.id);
+
   const memberSince = profile?.created_at
     ? new Date(profile.created_at).toLocaleDateString("en-US", {
         month: "long",
@@ -51,6 +57,7 @@ export default async function SettingsPage() {
           initialDisplayName={profile?.display_name ?? ""}
           initialInstagram={profile?.instagram ?? ""}
           initialGroupme={profile?.groupme ?? ""}
+          hasListings={(listingCount ?? 0) > 0}
         />
 
         {/* Account — read-only facts about the verified account. */}

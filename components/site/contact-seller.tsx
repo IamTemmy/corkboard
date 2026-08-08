@@ -32,13 +32,8 @@ function buildChannels(contact: SellerContact): Channel[] {
       external: Boolean(href),
     });
   }
-  if (contact.email) {
-    channels.push({
-      label: "Email",
-      display: contact.email,
-      href: `mailto:${contact.email}`,
-    });
-  }
+  // Note: the school email is intentionally NOT a contact channel — it's used
+  // only for sign-in/verification and is never shown to buyers.
   return channels;
 }
 

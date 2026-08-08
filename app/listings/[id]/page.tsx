@@ -45,24 +45,10 @@ export default async function ListingPage({ params }: ListingPageProps) {
     data: { user },
   } = await supabase.auth.getUser();
 
-  // Real listings pull the seller's contact live from their profile; the legacy
-  // demo rows use their embedded contact blob. Only fetched when signed in —
-  // that's the only time contact is revealed anyway.
-  let contact = listing.contact;
-  if (user && listing.sellerId) {
-    const { data: sellerProfile } = await supabase
-      .from("profiles")
-      .select("email, instagram, groupme")
-      .eq("id", listing.sellerId)
-      .maybeSingle();
-    if (sellerProfile) {
-      contact = {
-        email: sellerProfile.email ?? undefined,
-        instagram: sellerProfile.instagram ?? undefined,
-        groupme: sellerProfile.groupme ?? undefined,
-      };
-    }
-  }
+  // Contact is snapshotted onto the listing (Instagram/GroupMe) and kept in sync
+  // from Settings, so we never read another user's profile here. The email is
+  // never part of this — it's sign-in only.
+  const contact = listing.contact;
 
   // Other items in the same category, to suggest below (max 4).
   const all = await getListings();

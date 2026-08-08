@@ -129,12 +129,15 @@ create table if not exists public.profiles (
 
 alter table public.profiles enable row level security;
 
--- Signed-in users can view profiles (you should see who you're dealing with).
+-- A user may read ONLY their own profile. Listings carry their own contact
+-- snapshot + seller name, so nothing needs another user's profile — and this
+-- keeps emails from being harvestable. (See 006-lock-profiles-to-self.sql.)
 drop policy if exists "profiles viewable by authenticated" on public.profiles;
-create policy "profiles viewable by authenticated"
+drop policy if exists "profiles viewable by self" on public.profiles;
+create policy "profiles viewable by self"
   on public.profiles for select
   to authenticated
-  using (true);
+  using (auth.uid() = id);
 
 -- A user may create and edit ONLY their own profile row.
 drop policy if exists "users insert own profile" on public.profiles;

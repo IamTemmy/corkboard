@@ -112,6 +112,18 @@ export function NewListingForm({
       setError("Enter a valid GroupMe link (groupme.com/…) or leave it blank.");
       return;
     }
+    // A buyer needs a way to reach the seller (the school email is private), so
+    // at least one contact channel is required to publish.
+    const ig = instagram.trim().replace(/^@/, "");
+    const gm = groupme.trim();
+    if (!ig && !gm) {
+      setError("Add at least one way for buyers to reach you (Instagram or GroupMe).");
+      return;
+    }
+    const contact = {
+      ...(ig ? { instagram: ig } : {}),
+      ...(gm ? { groupme: gm } : {}),
+    };
 
     setSaving(true);
     const supabase = createClient();
@@ -133,9 +145,7 @@ export function NewListingForm({
       );
     }
 
-    // 2. Save any contact changes back to the profile (shown on all listings).
-    const ig = instagram.trim().replace(/^@/, "");
-    const gm = groupme.trim();
+    // 2. Save the contact back to the profile (so it prefills next time).
     if (ig !== initialInstagram || gm !== initialGroupme) {
       await supabase
         .from("profiles")
@@ -158,7 +168,7 @@ export function NewListingForm({
         campus: "JSU",
         meetup_spot: meetupSpot,
         status: "available",
-        contact: {},
+        contact,
       })
       .select("id")
       .single();
@@ -370,17 +380,17 @@ export function NewListingForm({
 
       {/* Contact (saved to profile) */}
       <div className="rounded-xl border border-line bg-paper-soft p-4">
-        <p className="text-sm font-medium text-ink/80">How buyers reach you</p>
+        <p className="text-sm font-medium text-ink/80">
+          How buyers reach you{" "}
+          <span className="font-normal text-ink/50">(add at least one)</span>
+        </p>
         <p className="mt-1 text-xs text-ink/55">
-          Buyers can always reach you by your school email. Add a handle below if
-          you&apos;d rather chat there — saved to your profile and used on all your
-          listings.
+          Buyers use these to reach you. Your school email stays private — it&apos;s
+          only for signing in. Saved to your profile and used on all your listings.
         </p>
         <div className="mt-3 grid grid-cols-1 gap-3 sm:grid-cols-2">
           <label className="flex flex-col gap-1.5">
-            <span className="text-xs font-medium text-ink/70">
-              Instagram (optional)
-            </span>
+            <span className="text-xs font-medium text-ink/70">Instagram</span>
             <input
               type="text"
               value={instagram}
@@ -390,9 +400,7 @@ export function NewListingForm({
             />
           </label>
           <label className="flex flex-col gap-1.5">
-            <span className="text-xs font-medium text-ink/70">
-              GroupMe link (optional)
-            </span>
+            <span className="text-xs font-medium text-ink/70">GroupMe link</span>
             <input
               type="text"
               value={groupme}

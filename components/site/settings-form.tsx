@@ -17,12 +17,14 @@ export function SettingsForm({
   initialDisplayName,
   initialInstagram,
   initialGroupme,
+  hasListings,
 }: {
   userId: string;
   jnumber: string;
   initialDisplayName: string;
   initialInstagram: string;
   initialGroupme: string;
+  hasListings: boolean;
 }) {
   const router = useRouter();
   const [displayName, setDisplayName] = useState(initialDisplayName);
@@ -49,19 +51,32 @@ export function SettingsForm({
       return;
     }
 
+    const ig = instagram.trim().replace(/^@/, "");
+    const gm = groupme.trim();
+    // If you have active listings, you can't remove every contact — buyers
+    // would have no way to reach you. (No listings yet? Blank is fine.)
+    if (hasListings && !ig && !gm) {
+      setError("Keep at least one contact (Instagram or GroupMe) — you have active listings.");
+      return;
+    }
+
     setSaving(true);
     const supabase = createClient();
     const name = displayName.trim();
     // What shows publicly as the seller name (falls back to the J-number).
     const displayValue = name || jnumber;
+    const contact = {
+      ...(ig ? { instagram: ig } : {}),
+      ...(gm ? { groupme: gm } : {}),
+    };
 
     const { error: profileError } = await supabase
       .from("profiles")
       .update({
         // Blank name → null, which falls back to the J-number in the UI.
         display_name: name || null,
-        instagram: instagram.trim().replace(/^@/, "") || null,
-        groupme: groupme.trim() || null,
+        instagram: ig || null,
+        groupme: gm || null,
       })
       .eq("id", userId);
 
@@ -71,16 +86,16 @@ export function SettingsForm({
       return;
     }
 
-    // The seller name is snapshotted onto each listing, so sync existing ones to
-    // the new name — that's what makes a name change show up everywhere.
+    // Name AND contact are snapshotted onto each listing — sync existing ones so
+    // a change here shows up everywhere.
     const { error: listingsError } = await supabase
       .from("listings")
-      .update({ seller: displayValue })
+      .update({ seller: displayValue, contact })
       .eq("seller_id", userId);
 
     setSaving(false);
     if (listingsError) {
-      setError("Saved your profile, but couldn't update your listings' name — try again.");
+      setError("Saved your profile, but couldn't update your listings — try again.");
       return;
     }
     setSaved(true);
@@ -134,8 +149,8 @@ export function SettingsForm({
       </div>
 
       <p className="text-xs text-ink/55">
-        Buyers can always reach you by your school email. Instagram and GroupMe
-        are optional extras, shown on every listing you post.
+        Buyers reach you through these, shown on every listing you post. Your
+        school email stays private — it&apos;s only for signing in.
       </p>
 
       {error && <p className="text-sm text-brick">{error}</p>}

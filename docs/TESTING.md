@@ -34,11 +34,14 @@ Legend: ✅ passing · ❌ failing · ⬜ not yet tested
 - ✅ Available item shows contact to a signed-in student
 - ⬜ GroupMe: only real groupme.com links are clickable; junk is rejected on save (Stage 1)
 
-### Identity
+### Identity & contact
 - ✅ Display name change updates the header and existing listings
 - ✅ Clearing the name falls back to the J-number everywhere
-- ⬜ School email is never shown as a public contact (Stage 2)
-- ⬜ A signed-in student cannot read other students' emails in bulk (Stage 2 RLS)
+- ⬜ School email is never shown as a public contact, even to a signed-in buyer (Stage 2)
+- ⬜ Publishing requires at least one contact (Instagram or GroupMe) (Stage 2)
+- ⬜ Changing contact in Settings propagates to existing listings (Stage 2)
+- ⬜ With active listings, Settings blocks clearing all contact (Stage 2)
+- ⬜ A signed-in student querying `profiles` gets only their own row (Stage 2, after 006)
 
 ### Security — test as an attacker (not just the happy path)
 These must be rejected by the **database**, not just hidden in the UI. Test with

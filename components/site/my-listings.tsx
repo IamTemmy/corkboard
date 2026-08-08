@@ -1,6 +1,6 @@
 "use client";
 
-import { useState } from "react";
+import { useEffect, useState } from "react";
 import Link from "next/link";
 import { useRouter } from "next/navigation";
 import { createClient } from "@/lib/supabase/client";
@@ -29,15 +29,17 @@ const statusLabel: Record<ListingStatus, string> = {
   sold: "Sold",
 };
 
-// Each action reads as its own thing — distinct by icon AND a palette colour
-// (neutral edit, marigold reserve, dark-ink sold, brick delete). No off-palette
-// blue; everything stays within Corkboard's tokens.
+// Four outline buttons, each its own icon + colour. Reserve/Sold fill in
+// (their "active" state) when the item IS in that status; clicking an active one
+// reverts to available — so revert lives in the same four buttons, no fifth.
 const baseBtn =
-  "inline-flex items-center gap-1.5 rounded-lg px-3 py-2 text-xs font-medium transition-colors disabled:opacity-50";
-const neutralBtn = `${baseBtn} border border-line text-ink/80 hover:border-ink/25 hover:bg-ink/5 hover:text-ink`;
-const reservedBtn = `${baseBtn} border border-marigold/45 text-ink/80 hover:border-marigold/70 hover:bg-marigold/10`;
-const soldBtn = `${baseBtn} bg-ink font-semibold text-paper hover:bg-ink/85`;
-const dangerBtn = `${baseBtn} text-brick hover:bg-brick/10`;
+  "inline-flex items-center gap-1.5 rounded-lg border px-3 py-2 text-xs font-medium transition-colors disabled:opacity-50";
+const editBtn = `${baseBtn} border-[#3b6fa0]/45 text-[#3b6fa0] hover:border-[#3b6fa0]/70 hover:bg-[#3b6fa0]/8`;
+const deleteBtn = `${baseBtn} border-brick/40 text-brick hover:border-brick/60 hover:bg-brick/8`;
+const reservedIdle = `${baseBtn} border-[#c8912e]/55 text-[#a9781a] hover:bg-marigold/12`;
+const reservedActive = `${baseBtn} border-transparent bg-marigold font-semibold text-ink hover:bg-marigold/90`;
+const soldIdle = `${baseBtn} border-line text-ink/70 hover:border-moss/50 hover:bg-moss/8 hover:text-moss`;
+const soldActive = `${baseBtn} border-transparent bg-moss font-semibold text-paper hover:bg-moss/90`;
 
 const iconClass = "size-3.5 shrink-0";
 const svgProps = {
@@ -50,6 +52,7 @@ const svgProps = {
   "aria-hidden": true,
 };
 
+// Icons inherit the button's text colour (currentColor), so they match each state.
 const EditIcon = () => (
   <svg {...svgProps} className={iconClass}>
     <path d="M12 20h9" />
@@ -57,19 +60,14 @@ const EditIcon = () => (
   </svg>
 );
 const ReserveIcon = () => (
-  <svg {...svgProps} className={`${iconClass} text-marigold`}>
-    <path d="M19 21l-7-5-7 5V5a2 2 0 0 1 2-2h10a2 2 0 0 1 2 2z" />
-  </svg>
-);
-const RelistIcon = () => (
   <svg {...svgProps} className={iconClass}>
-    <path d="M3 3v5h5" />
-    <path d="M3.05 13A9 9 0 1 0 6 5.3L3 8" />
+    <path d="M19 21l-7-5-7 5V5a2 2 0 0 1 2-2h10a2 2 0 0 1 2 2z" />
   </svg>
 );
 const SoldIcon = () => (
   <svg {...svgProps} className={iconClass}>
-    <path d="M20 6 9 17l-5-5" />
+    <circle cx="12" cy="12" r="10" />
+    <path d="m9 12 2 2 4-4" />
   </svg>
 );
 const DeleteIcon = () => (
@@ -79,10 +77,44 @@ const DeleteIcon = () => (
     <path d="M19 6v14a2 2 0 0 1-2 2H7a2 2 0 0 1-2-2V6" />
   </svg>
 );
+const MoreIcon = () => (
+  <svg viewBox="0 0 24 24" fill="currentColor" className="size-4 shrink-0" aria-hidden="true">
+    <circle cx="12" cy="5" r="1.6" />
+    <circle cx="12" cy="12" r="1.6" />
+    <circle cx="12" cy="19" r="1.6" />
+  </svg>
+);
 
 export function MyListings({ listings }: { listings: Listing[] }) {
   const router = useRouter();
   const [busyId, setBusyId] = useState<string | null>(null);
+  const [openMenuId, setOpenMenuId] = useState<string | null>(null);
+  const [copiedId, setCopiedId] = useState<string | null>(null);
+
+  // Close the ⋮ menu on an outside click.
+  useEffect(() => {
+    if (!openMenuId) return;
+    function onDown(e: MouseEvent) {
+      if (!(e.target as HTMLElement).closest("[data-row-menu]")) {
+        setOpenMenuId(null);
+      }
+    }
+    document.addEventListener("mousedown", onDown);
+    return () => document.removeEventListener("mousedown", onDown);
+  }, [openMenuId]);
+
+  async function copyLink(id: string) {
+    try {
+      await navigator.clipboard.writeText(
+        `${window.location.origin}/listings/${id}`,
+      );
+      setCopiedId(id);
+      setTimeout(() => setCopiedId(null), 1500);
+    } catch {
+      // clipboard blocked — nothing we can do; just close the menu
+    }
+    setOpenMenuId(null);
+  }
 
   async function setStatus(id: string, status: ListingStatus) {
     setBusyId(id);
@@ -167,65 +199,100 @@ export function MyListings({ listings }: { listings: Listing[] }) {
                     {formatPrice(l.price)}
                   </p>
                 </div>
-                <span
-                  className={`shrink-0 rounded-full px-2.5 py-1 text-[10px] font-semibold uppercase tracking-[0.05em] ${statusStyles[l.status]}`}
-                >
-                  {statusLabel[l.status]}
-                </span>
+                <div className="flex shrink-0 items-center gap-2">
+                  <span
+                    className={`rounded-full px-2.5 py-1 text-[10px] font-semibold uppercase tracking-[0.05em] ${statusStyles[l.status]}`}
+                  >
+                    {statusLabel[l.status]}
+                  </span>
+                  <div className="relative" data-row-menu>
+                    <button
+                      type="button"
+                      aria-label="More actions"
+                      aria-haspopup="menu"
+                      aria-expanded={openMenuId === l.id}
+                      onClick={() =>
+                        setOpenMenuId(openMenuId === l.id ? null : l.id)
+                      }
+                      className="flex size-7 items-center justify-center rounded-lg text-ink/50 transition-colors hover:bg-ink/5 hover:text-ink"
+                    >
+                      <MoreIcon />
+                    </button>
+                    {openMenuId === l.id && (
+                      <div
+                        role="menu"
+                        className="absolute right-0 top-full z-30 mt-1 w-40 rounded-xl border border-line bg-paper-soft p-1 shadow-[0_8px_24px_rgba(28,36,48,0.12)]"
+                      >
+                        <button
+                          type="button"
+                          onClick={() => copyLink(l.id)}
+                          className="block w-full rounded-lg px-3 py-2 text-left text-sm text-ink/80 transition-colors hover:bg-paper hover:text-ink"
+                        >
+                          {copiedId === l.id ? "Copied ✓" : "Copy link"}
+                        </button>
+                      </div>
+                    )}
+                  </div>
+                </div>
               </div>
 
               <div className="flex flex-wrap gap-2">
                 <Tooltip label="Edit this listing's details">
-                  <Link href={`/listings/${l.id}/edit`} className={neutralBtn}>
+                  <Link href={`/listings/${l.id}/edit`} className={editBtn}>
                     <EditIcon />
                     Edit
                   </Link>
                 </Tooltip>
-                {l.status !== "available" && (
-                  <Tooltip label="Put it back on the board as available">
-                    <button
-                      type="button"
-                      disabled={busy}
-                      onClick={() => setStatus(l.id, "available")}
-                      className={neutralBtn}
-                    >
-                      <RelistIcon />
-                      {l.status === "sold" ? "Relist" : "Mark available"}
-                    </button>
-                  </Tooltip>
-                )}
-                {l.status === "available" && (
-                  <Tooltip label="Reserve this item while a sale is pending">
-                    <button
-                      type="button"
-                      disabled={busy}
-                      onClick={() => setStatus(l.id, "reserved")}
-                      className={reservedBtn}
-                    >
-                      <ReserveIcon />
-                      Mark reserved
-                    </button>
-                  </Tooltip>
-                )}
-                {l.status !== "sold" && (
-                  <Tooltip label="Mark as sold (item will leave the board)">
-                    <button
-                      type="button"
-                      disabled={busy}
-                      onClick={() => setStatus(l.id, "sold")}
-                      className={soldBtn}
-                    >
-                      <SoldIcon />
-                      Mark sold
-                    </button>
-                  </Tooltip>
-                )}
+
+                <Tooltip
+                  label={
+                    l.status === "reserved"
+                      ? "Un-reserve — put it back on the board"
+                      : "Reserve this item while a sale is pending"
+                  }
+                >
+                  <button
+                    type="button"
+                    disabled={busy}
+                    onClick={() =>
+                      setStatus(
+                        l.id,
+                        l.status === "reserved" ? "available" : "reserved",
+                      )
+                    }
+                    className={l.status === "reserved" ? reservedActive : reservedIdle}
+                  >
+                    <ReserveIcon />
+                    {l.status === "reserved" ? "Reserved" : "Mark reserved"}
+                  </button>
+                </Tooltip>
+
+                <Tooltip
+                  label={
+                    l.status === "sold"
+                      ? "Relist — put it back on the board"
+                      : "Mark as sold (item will leave the board)"
+                  }
+                >
+                  <button
+                    type="button"
+                    disabled={busy}
+                    onClick={() =>
+                      setStatus(l.id, l.status === "sold" ? "available" : "sold")
+                    }
+                    className={l.status === "sold" ? soldActive : soldIdle}
+                  >
+                    <SoldIcon />
+                    {l.status === "sold" ? "Sold" : "Mark sold"}
+                  </button>
+                </Tooltip>
+
                 <Tooltip label="Delete this listing permanently">
                   <button
                     type="button"
                     disabled={busy}
                     onClick={() => remove(l)}
-                    className={dangerBtn}
+                    className={deleteBtn}
                   >
                     <DeleteIcon />
                     Delete

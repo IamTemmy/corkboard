@@ -6,6 +6,12 @@ to the **Deployment test log** after each production deploy.
 
 Legend: ✅ passing · ❌ failing · ⬜ not yet tested
 
+> ⚠️ **Before clearing demo data** (`delete from listings;`): the CI Playwright
+> "content behavior (assumes demo listings)" tests (search "shoe"/"sneaker",
+> board-not-empty, category filter) depend on the seed listings and will go red
+> once the board is empty. Skip or reseed those before wiping, so CI isn't red
+> for a working app.
+
 ---
 
 ## Critical-path checklist

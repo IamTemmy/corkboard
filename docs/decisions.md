@@ -87,6 +87,17 @@ Not university-operated or endorsed unless something is signed. Use a neutral na
 
 ---
 
+## Sold listings stay reachable by direct link
+
+*(Added 2026-08-09, pre-launch review.)*
+
+Sold items leave the **public board** (`getListings` filters them out), but a
+direct URL `/listings/<sold-id>` still loads and shows a "Sold" state with
+contact hidden. This is **intentional**: an old shared link that says "Sold" is
+less confusing than one that suddenly 404s, and it leaves room for future
+social-proof ("recently sold"). We deliberately chose this over making sold
+listings seller-only/404 for the public.
+
 ## Success definition for this build
 
 Finishing and launching, not maximizing features. A polished, deployed MVP with a handful of real users beats an ambitious unfinished product — especially since this is the first site built solo.

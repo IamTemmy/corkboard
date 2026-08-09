@@ -22,16 +22,6 @@ test.describe("site health", () => {
     await expect(page.locator(card)).toHaveCount(0);
   });
 
-  test("category filter shows only that category", async ({ page }) => {
-    await page.goto("/");
-    await page.getByRole("button", { name: "Electronics", exact: true }).click();
-    const cards = page.locator(card);
-    const count = await cards.count();
-    for (let i = 0; i < count; i++) {
-      await expect(cards.nth(i)).toContainText("Electronics");
-    }
-  });
-
   test("no sold item appears on the public board", async ({ page }) => {
     await page.goto("/");
     // Sold listings must leave the board — a "Sold" badge on any card is a bug.
@@ -74,6 +64,21 @@ test.describe("content behavior (assumes demo listings)", () => {
   test("the board shows listings", async ({ page }) => {
     await page.goto("/");
     expect(await page.locator(card).count()).toBeGreaterThan(0);
+  });
+
+  test("category filter returns only that category (and isn't empty)", async ({
+    page,
+  }) => {
+    await page.goto("/");
+    await page.getByRole("button", { name: "Electronics", exact: true }).click();
+    const cards = page.locator(card);
+    // Must actually return items — a broken filter that shows nothing would
+    // otherwise pass a "for each card…" loop vacuously.
+    const count = await cards.count();
+    expect(count).toBeGreaterThan(0);
+    for (let i = 0; i < count; i++) {
+      await expect(cards.nth(i)).toContainText("Electronics");
+    }
   });
 
   test('search "shoe" surfaces a sneaker (synonyms + brand indicators)', async ({

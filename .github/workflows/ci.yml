@@ -1,0 +1,37 @@
+name: CI
+
+# Run checks on every push and pull request so broken code is caught before it
+# ships. Lint + build are the baseline; the Playwright smoke suite is added in a
+# later step.
+on:
+  push:
+    branches: [main]
+  pull_request:
+
+jobs:
+  build:
+    name: Lint & build
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+
+      - name: Set up Node
+        uses: actions/setup-node@v4
+        with:
+          node-version: 20
+          cache: npm
+
+      - name: Install dependencies
+        run: npm ci
+
+      - name: Lint
+        run: npm run lint
+
+      - name: Build
+        run: npm run build
+        env:
+          # These NEXT_PUBLIC_* keys are public by design (they ship to the
+          # browser). Add them under Settings → Secrets and variables → Actions,
+          # or the build fails when it reads Supabase at compile time.
+          NEXT_PUBLIC_SUPABASE_URL: ${{ secrets.NEXT_PUBLIC_SUPABASE_URL }}
+          NEXT_PUBLIC_SUPABASE_ANON_KEY: ${{ secrets.NEXT_PUBLIC_SUPABASE_ANON_KEY }}

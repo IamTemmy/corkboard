@@ -50,7 +50,9 @@ export async function Nav() {
     <nav className="relative flex items-center justify-between border-b border-line bg-paper-soft px-6 py-5 sm:grid sm:grid-cols-[1fr_auto_1fr] sm:px-12">
       {/* Wordmark links home. A plain <a> (not next/link) forces a full page
           load, which resets any active search/filter — so clicking it is a
-          reliable "back to a fresh homepage", even when you're already on it. */}
+          reliable "back to a fresh homepage", even when you're already on it.
+          This is deliberate, so we opt out of the next/link lint rule here. */}
+      {/* eslint-disable-next-line @next/next/no-html-link-for-pages */}
       <a
         href="/"
         className="flex items-center gap-2 font-display text-[22px] font-semibold tracking-[-0.01em]"

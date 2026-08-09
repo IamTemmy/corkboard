@@ -51,11 +51,20 @@ export default async function ListingPage({ params }: ListingPageProps) {
   // never part of this — it's sign-in only.
   const contact = listing.contact;
 
-  // Other items in the same category, to suggest below (max 4).
+  // Suggest up to 4 other listings below. Prefer the same category, then top up
+  // with other recent listings so the row never strands a lone card in an empty
+  // grid — matters most now, while categories are still thin.
   const all = await getListings();
-  const related = all
-    .filter((other) => other.category === listing.category && other.id !== listing.id)
-    .slice(0, 4);
+  const others = all.filter((other) => other.id !== listing.id);
+  const sameCategory = others.filter((other) => other.category === listing.category);
+  const related = [
+    ...sameCategory,
+    ...others.filter((other) => other.category !== listing.category),
+  ].slice(0, 4);
+  // Only call it "More in <category>" when every card really is that category;
+  // once we've topped up with other items, it's just "Keep browsing".
+  const relatedAllSameCategory =
+    related.length > 0 && related.every((r) => r.category === listing.category);
 
   return (
     <>
@@ -144,7 +153,7 @@ export default async function ListingPage({ params }: ListingPageProps) {
         {related.length > 0 && (
           <section className="mt-16">
             <h2 className="mb-5 text-[13px] font-semibold uppercase tracking-[0.06em] text-ink/55">
-              More in {listing.category}
+              {relatedAllSameCategory ? `More in ${listing.category}` : "Keep browsing"}
             </h2>
             <div className="grid grid-cols-2 gap-5 sm:grid-cols-4">
               {related.map((other) => (

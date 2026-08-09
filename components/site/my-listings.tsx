@@ -93,6 +93,8 @@ export function MyListings({ listings }: { listings: Listing[] }) {
   const [copiedId, setCopiedId] = useState<string | null>(null);
   // The listing awaiting delete confirmation (null = the dialog is closed).
   const [pendingDelete, setPendingDelete] = useState<Listing | null>(null);
+  // Surfaced when a status change or delete fails (they were silent before).
+  const [actionError, setActionError] = useState<string | null>(null);
 
   // Close the ⋮ menu on an outside click.
   useEffect(() => {
@@ -120,6 +122,7 @@ export function MyListings({ listings }: { listings: Listing[] }) {
   }
 
   async function setStatus(id: string, status: ListingStatus) {
+    setActionError(null);
     setBusyId(id);
     const supabase = createClient();
     // Stamp the sale time when it sells; clear it if it comes back to life.
@@ -127,20 +130,37 @@ export function MyListings({ listings }: { listings: Listing[] }) {
       status === "sold"
         ? { status, sold_at: new Date().toISOString() }
         : { status, sold_at: null };
-    await supabase.from("listings").update(patch).eq("id", id);
-    router.refresh();
+    const { error } = await supabase.from("listings").update(patch).eq("id", id);
     setBusyId(null);
+    if (error) {
+      // Don't leave the click looking like it did nothing.
+      setActionError("Couldn't update the listing — check your connection and try again.");
+      return;
+    }
+    router.refresh();
   }
 
   // Runs after the styled ConfirmDialog is accepted.
   async function confirmDelete() {
     const listing = pendingDelete;
     if (!listing) return;
+    setActionError(null);
     setBusyId(listing.id);
     const supabase = createClient();
 
-    // Delete the photos from Storage first so they don't orphan (best-effort;
-    // the paths live in the user's own folder, which their RLS policy allows).
+    // Delete the row FIRST. If that fails, the listing stays fully intact —
+    // better than a live listing whose photos we already deleted out from under
+    // it (the previous order risked exactly that).
+    const { error } = await supabase.from("listings").delete().eq("id", listing.id);
+    if (error) {
+      setBusyId(null);
+      setPendingDelete(null);
+      setActionError("Couldn't delete the listing — please try again.");
+      return;
+    }
+
+    // Row is gone; now clean up its Storage photos best-effort. An orphaned file
+    // is harmless, and RLS only lets us touch our own folder anyway.
     const paths = listing.images
       .map(imageStoragePath)
       .filter((p): p is string => p !== null);
@@ -148,7 +168,6 @@ export function MyListings({ listings }: { listings: Listing[] }) {
       await supabase.storage.from("listing-images").remove(paths);
     }
 
-    await supabase.from("listings").delete().eq("id", listing.id);
     setPendingDelete(null);
     router.refresh();
     setBusyId(null);
@@ -168,6 +187,11 @@ export function MyListings({ listings }: { listings: Listing[] }) {
 
   return (
     <>
+    {actionError && (
+      <p className="mb-4 rounded-lg border border-brick/40 bg-brick/8 px-4 py-2.5 text-sm text-brick">
+        {actionError}
+      </p>
+    )}
     <ul className="flex flex-col gap-4">
       {listings.map((l) => {
         const busy = busyId === l.id;

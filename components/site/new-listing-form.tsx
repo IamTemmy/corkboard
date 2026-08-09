@@ -6,6 +6,7 @@ import Link from "next/link";
 import { createClient } from "@/lib/supabase/client";
 import { processImageForUpload } from "@/lib/image";
 import { isValidGroupme } from "@/lib/contact";
+import { syncSellerListings } from "@/lib/sync-listings";
 import { LISTING_ACKNOWLEDGMENT } from "@/lib/guidelines";
 import { Button } from "@/components/ui/button";
 import { DescriptionHint } from "@/components/site/description-hint";
@@ -139,7 +140,10 @@ export function NewListingForm({
     setSaving(true);
     const supabase = createClient();
 
-    // 1. Upload each photo into the student's own folder (first = cover).
+    // 1. Upload each photo into the student's own folder (first = cover). Track
+    //    the paths so we can roll them back if a later step fails — Storage and
+    //    Postgres aren't one transaction, so we clean up orphans ourselves.
+    const uploadedPaths: string[] = [];
     const imageUrls: string[] = [];
     for (const img of images) {
       const path = `${userId}/${crypto.randomUUID()}.jpg`;
@@ -147,21 +151,26 @@ export function NewListingForm({
         .from("listing-images")
         .upload(path, img.file, { contentType: "image/jpeg" });
       if (uploadError) {
+        await supabase.storage.from("listing-images").remove(uploadedPaths);
         setSaving(false);
         setError(`Couldn't upload a photo: ${uploadError.message}`);
         return;
       }
+      uploadedPaths.push(path);
       imageUrls.push(
         supabase.storage.from("listing-images").getPublicUrl(path).data.publicUrl,
       );
     }
 
-    // 2. Save the contact back to the profile (so it prefills next time).
+    // 2. Save the contact to the profile (so it prefills next time) and — since
+    //    contact is snapshotted per listing — sync it onto existing listings too,
+    //    so changing it here doesn't leave old listings on the old handle.
     if (ig !== initialInstagram || gm !== initialGroupme) {
       await supabase
         .from("profiles")
         .update({ instagram: ig || null, groupme: gm || null })
         .eq("id", userId);
+      await syncSellerListings(supabase, userId, { contact });
     }
 
     // 3. Create the listing, owned by this student.
@@ -185,6 +194,8 @@ export function NewListingForm({
       .single();
 
     if (insertError || !created) {
+      // Roll back the just-uploaded photos so they don't orphan in Storage.
+      await supabase.storage.from("listing-images").remove(uploadedPaths);
       setSaving(false);
       setError(`Couldn't post the listing: ${insertError?.message ?? "unknown error"}`);
       return;

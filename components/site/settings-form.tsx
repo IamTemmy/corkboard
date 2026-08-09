@@ -4,6 +4,7 @@ import { useState } from "react";
 import { useRouter } from "next/navigation";
 import { createClient } from "@/lib/supabase/client";
 import { isValidGroupme } from "@/lib/contact";
+import { syncSellerListings } from "@/lib/sync-listings";
 import { Button } from "@/components/ui/button";
 
 const fieldClass =
@@ -88,10 +89,10 @@ export function SettingsForm({
 
     // Name AND contact are snapshotted onto each listing — sync existing ones so
     // a change here shows up everywhere.
-    const { error: listingsError } = await supabase
-      .from("listings")
-      .update({ seller: displayValue, contact })
-      .eq("seller_id", userId);
+    const { error: listingsError } = await syncSellerListings(supabase, userId, {
+      seller: displayValue,
+      contact,
+    });
 
     setSaving(false);
     if (listingsError) {

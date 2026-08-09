@@ -4,7 +4,6 @@ import { Nav } from "@/components/site/nav";
 import { Footer } from "@/components/site/footer";
 import { NewListingForm } from "@/components/site/new-listing-form";
 import { createClient } from "@/lib/supabase/server";
-import { jnumberOf } from "@/lib/identity";
 
 export const metadata: Metadata = {
   title: "List an item — Corkboard",
@@ -48,7 +47,6 @@ export default async function NewListingPage() {
 
         <NewListingForm
           userId={user.id}
-          sellerName={profile?.display_name ?? jnumberOf(user.email)}
           initialInstagram={profile?.instagram ?? ""}
           initialGroupme={profile?.groupme ?? ""}
         />

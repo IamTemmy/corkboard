@@ -28,12 +28,10 @@ const fieldClass =
 
 export function NewListingForm({
   userId,
-  sellerName,
   initialInstagram,
   initialGroupme,
 }: {
   userId: string;
-  sellerName: string;
   initialInstagram: string;
   initialGroupme: string;
 }) {
@@ -187,7 +185,9 @@ export function NewListingForm({
       }
     }
 
-    // 3. Create the listing, owned by this student.
+    // 3. Create the listing. We send ONLY the fields the seller decides — the
+    //    database derives the trusted ones (seller_id, seller, campus,
+    //    created_at, status, sold_at) via a trigger, so they can't be spoofed.
     const { data: created, error: insertError } = await supabase
       .from("listings")
       .insert({
@@ -197,11 +197,7 @@ export function NewListingForm({
         condition,
         price: priceValue,
         images: imageUrls,
-        seller: sellerName,
-        seller_id: userId,
-        campus: "JSU",
         meetup_spot: meetupSpot,
-        status: "available",
         contact,
       })
       .select("id")

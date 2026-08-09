@@ -75,13 +75,14 @@ export function JoinForm() {
       <span className="mb-6 block size-3 rounded-[3px] bg-brick" aria-hidden="true" />
 
       <h1 className="font-display mb-2 text-[30px] font-semibold leading-tight tracking-[-0.01em]">
-        {step === "email" ? "Sign in to Corkboard" : "Check your email"}
+        {step === "email" ? "Sign in or sign up" : "Check your email"}
       </h1>
 
       {step === "email" ? (
         <p className="mb-7 text-[15px] text-ink/65">
-          Enter your Jackson State student email and we&apos;ll send a 6-digit
-          code — no password. New to Corkboard? This creates your account too.
+          New or returning, it&apos;s the same step: enter your Jackson State
+          student email and we&apos;ll send a 6-digit code — no password. First
+          time? This creates your account automatically.
         </p>
       ) : (
         <p className="mb-7 text-[15px] text-ink/65">

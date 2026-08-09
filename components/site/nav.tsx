@@ -94,16 +94,27 @@ export async function Nav() {
           its grid column so the centre nav links stay truly page-centred. */}
       {/* The corner is account-only now; "+ List an item" lives beside Search on
           the home page and in the account menu / mobile menu elsewhere. */}
-      <div className="hidden items-center sm:flex sm:justify-end">
+      <div className="hidden items-center gap-4 sm:flex sm:justify-end">
         {displayName ? (
           <AccountMenu name={displayName} />
         ) : (
-          <Link
-            href="/join"
-            className="text-sm font-medium text-ink/75 transition-colors hover:text-ink"
-          >
-            Sign in
-          </Link>
+          <>
+            {/* Two words, one flow: returning students look for "Sign in",
+                first-timers look for "Sign up". Both go to /join, which sends
+                a code and creates the account on first verification. */}
+            <Link
+              href="/join"
+              className="text-sm font-medium text-ink/75 transition-colors hover:text-ink"
+            >
+              Sign in
+            </Link>
+            <Link
+              href="/join"
+              className="rounded-lg bg-ink px-4 py-2 text-sm font-semibold text-paper transition-opacity hover:opacity-90"
+            >
+              Sign up
+            </Link>
+          </>
         )}
       </div>
 

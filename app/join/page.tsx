@@ -6,8 +6,9 @@ import { JoinForm } from "@/components/site/join-form";
 import { createClient } from "@/lib/supabase/server";
 
 export const metadata: Metadata = {
-  title: "Sign in — Corkboard",
-  description: "Sign in with your school email to buy and sell on Corkboard.",
+  title: "Sign in or sign up — Corkboard",
+  description:
+    "Sign in or create your account with your school email to buy and sell on Corkboard.",
 };
 
 // Reads the session, so it must render per-request.

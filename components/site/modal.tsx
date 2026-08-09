@@ -103,7 +103,8 @@ export function Modal({
         {showClose && (
           <button
             type="button"
-            onClick={onClose}
+            onClick={() => dismissable && onClose()}
+            disabled={!dismissable}
             aria-label="Close"
             className="absolute right-4 top-4 flex size-8 items-center justify-center rounded-full text-ink/50 transition-colors hover:bg-ink/5 hover:text-ink"
           >

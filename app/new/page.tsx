@@ -28,6 +28,11 @@ export default async function NewListingPage() {
     .eq("id", user.id)
     .maybeSingle();
 
+  // If they haven't chosen how to appear yet, send them through /welcome first —
+  // otherwise the seller name would fall back to their (semi-private) J-number
+  // and get snapshotted publicly onto the listing.
+  if (!profile?.display_name) redirect("/welcome");
+
   return (
     <>
       <Nav />

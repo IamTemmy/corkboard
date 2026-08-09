@@ -147,8 +147,13 @@ export default async function ListingPage({ params }: ListingPageProps) {
               </p>
             )}
 
-            {/* Report — signed-in students can flag listings that break the rules */}
-            <ReportListing listingId={listing.id} reporterId={user?.id ?? null} />
+            {/* Report — signed-in students can flag listings that break the
+                rules (hidden on your own listing). */}
+            <ReportListing
+              listingId={listing.id}
+              reporterId={user?.id ?? null}
+              isOwner={!!user && user.id === listing.sellerId}
+            />
           </div>
         </div>
 

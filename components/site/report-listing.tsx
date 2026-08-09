@@ -45,9 +45,12 @@ function FlagIcon() {
 export function ReportListing({
   listingId,
   reporterId,
+  isOwner = false,
 }: {
   listingId: string;
   reporterId: string | null;
+  /** The owner manages their own listing (Edit/Delete) — no reason to report it. */
+  isOwner?: boolean;
 }) {
   const [open, setOpen] = useState(false);
   const [reason, setReason] = useState("");
@@ -63,6 +66,9 @@ export function ReportListing({
     const timer = setTimeout(() => setToast(false), 4000);
     return () => clearTimeout(timer);
   }, [toast]);
+
+  // Don't offer "Report" on your own listing (owner has Edit/Delete elsewhere).
+  if (isOwner) return null;
 
   // Signed-out visitors get a nudge to sign in rather than the report action.
   if (!reporterId) {

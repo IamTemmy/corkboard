@@ -8,10 +8,13 @@ import { processImageForUpload } from "@/lib/image";
 import { isValidGroupme } from "@/lib/contact";
 import { LISTING_ACKNOWLEDGMENT } from "@/lib/guidelines";
 import { Button } from "@/components/ui/button";
+import { DescriptionHint } from "@/components/site/description-hint";
 import {
   LISTING_CATEGORIES,
   CONDITIONS,
   MEETUP_SPOTS,
+  CATEGORY_LISTING_TIPS,
+  DEFAULT_DESCRIPTION_PLACEHOLDER,
 } from "@/lib/listings";
 
 // Generous cap on the RAW pick — we downscale/compress before upload, so the
@@ -376,12 +379,16 @@ export function NewListingForm({
           Description{" "}
           <span className="font-normal text-ink/50">(optional)</span>
         </span>
+        <DescriptionHint category={category} />
         <textarea
           rows={4}
           maxLength={600}
           value={description}
           onChange={(e) => setDescription(e.target.value)}
-          placeholder="Size, condition details, why you're selling…"
+          placeholder={
+            CATEGORY_LISTING_TIPS[category]?.placeholder ??
+            DEFAULT_DESCRIPTION_PLACEHOLDER
+          }
           className={`${fieldClass} resize-y`}
         />
       </label>

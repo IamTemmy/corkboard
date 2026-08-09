@@ -26,6 +26,42 @@ export const LISTING_CATEGORIES = [
 // Condition options for the list form.
 export const CONDITIONS = ["New", "Like new", "Good condition", "Fair"] as const;
 
+// Category-aware guidance for the Description field — a gentle nudge toward the
+// details buyers usually need, so sellers don't forget the obvious (a shoe's
+// size). NOTHING is required; this only prompts, at the moment they're writing.
+// Single source used by the new + edit forms. If usage later shows buyers keep
+// asking for one of these, promote it into a real structured field then — no
+// need to guess a full product taxonomy now.
+export const CATEGORY_LISTING_TIPS: Record<
+  string,
+  { wants: string[]; placeholder: string }
+> = {
+  Clothing: {
+    wants: ["Size", "Brand", "Condition"],
+    placeholder: "e.g. Men's size 10.5, New Balance, worn twice, no flaws.",
+  },
+  Electronics: {
+    wants: ["Brand / model", "Condition", "What's included"],
+    placeholder: "e.g. iPad 9th gen 64GB, great condition, comes with charger.",
+  },
+  Furniture: {
+    wants: ["Dimensions", "Condition", "Help to move?"],
+    placeholder: "e.g. Desk, 48×24×30 in, sturdy — can help carry it down.",
+  },
+  Books: {
+    wants: ["Title / edition", "Course", "Condition"],
+    placeholder: "e.g. Calculus 8th ed. (MATH 121), light highlighting.",
+  },
+  Dorm: {
+    wants: ["Dimensions / fit", "Condition"],
+    placeholder: "e.g. Mini fridge, fits under a lofted bed, works great.",
+  },
+};
+
+// Description placeholder before a category is picked.
+export const DEFAULT_DESCRIPTION_PLACEHOLDER =
+  "Size, condition details, why you're selling…";
+
 export type ListingStatus = "available" | "reserved" | "sold";
 
 // A seller's chosen coordination channel(s). No one is forced to share social

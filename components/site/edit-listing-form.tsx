@@ -5,7 +5,14 @@ import Link from "next/link";
 import { useRouter } from "next/navigation";
 import { createClient } from "@/lib/supabase/client";
 import { Button } from "@/components/ui/button";
-import { LISTING_CATEGORIES, CONDITIONS, MEETUP_SPOTS } from "@/lib/listings";
+import { DescriptionHint } from "@/components/site/description-hint";
+import {
+  LISTING_CATEGORIES,
+  CONDITIONS,
+  MEETUP_SPOTS,
+  CATEGORY_LISTING_TIPS,
+  DEFAULT_DESCRIPTION_PLACEHOLDER,
+} from "@/lib/listings";
 import type { Listing } from "@/lib/listings";
 
 const fieldClass =
@@ -160,11 +167,16 @@ export function EditListingForm({ listing }: { listing: Listing }) {
         <span className="text-sm font-medium text-ink/80">
           Description <span className="font-normal text-ink/50">(optional)</span>
         </span>
+        <DescriptionHint category={category} />
         <textarea
           rows={4}
           maxLength={600}
           value={description}
           onChange={(e) => setDescription(e.target.value)}
+          placeholder={
+            CATEGORY_LISTING_TIPS[category]?.placeholder ??
+            DEFAULT_DESCRIPTION_PLACEHOLDER
+          }
           className={`${fieldClass} resize-y`}
         />
       </label>

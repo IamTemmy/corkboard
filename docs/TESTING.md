@@ -87,17 +87,20 @@ user cases need two real accounts (Student A owns a listing; Student B attacks).
 - ✅ INSERT report → denied
 - ✅ (sanity) read `title` → allowed
 
-**Authenticated — Student B against Student A (run these):**
-- ⬜ UPDATE A's listing → must fail
-- ⬜ DELETE A's listing → must fail
-- ⬜ delete A's Storage image → must fail
-- ⬜ read A's profile row → must fail (self-only)
-- ⬜ report own listing → must fail
-- ⬜ create listing with spoofed `seller`/`campus` → DB overrides to B's profile
-- ⬜ create listing with invalid `meetup_spot` → must fail
-- ⬜ create/patch listing to `contact: {}` while available → must fail
-- ⬜ create listing with 0 or 6+ images → must fail
-- ⬜ (happy path) B reports A's listing once → succeeds; a second time → dedup
+**Authenticated (verified 2026-08-09 via SQL role-simulation — see
+`supabase/tests/authz-check.sql`; run against real 2 accounts once Resend is set):**
+- ✅ UPDATE another user's listing → blocked (0 rows)
+- ✅ DELETE another user's listing → blocked (same ownership policy as UPDATE)
+- ✅ read another user's profile → blocked (self-only)
+- ✅ create listing with spoofed `seller`/`campus` → DB overrides to own profile
+- ✅ create listing with invalid `meetup_spot` → blocked (CHECK)
+- ✅ create listing with `contact: {}` while available → blocked (CHECK)
+- ✅ create listing with 0 (or 6+) images → blocked (CHECK)
+
+**Still to confirm with two real accounts (Path A, after Resend domain):**
+- ⬜ delete A's Storage image as B → must fail (folder-scoped policy)
+- ⬜ report own listing → must fail (reporter ≠ owner policy)
+- ⬜ (happy path) B reports A's listing once → succeeds; twice → dedup
 
 ---
 

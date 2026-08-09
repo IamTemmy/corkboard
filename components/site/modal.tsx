@@ -37,6 +37,10 @@ export function Modal({
     const card = cardRef.current;
     if (!card) return;
 
+    // Remember what had focus so we can hand it back when the modal closes
+    // (e.g. the "Report listing" trigger), for keyboard/screen-reader users.
+    const opener = document.activeElement as HTMLElement | null;
+
     const focusables = () =>
       Array.from(
         card.querySelectorAll<HTMLElement>(
@@ -75,6 +79,7 @@ export function Modal({
     return () => {
       document.removeEventListener("keydown", onKey);
       document.body.style.overflow = prevOverflow;
+      opener?.focus?.();
     };
   }, [open, dismissable, onClose]);
 

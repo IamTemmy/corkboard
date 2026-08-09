@@ -107,7 +107,8 @@ proxy.ts                 Session refresher (Next 16's renamed middleware)
   hook checks the email domain against an `approved_email_domains` table, so
   adding a campus later is a data change, not a code change.
 - **Identity is a chosen display name**, not the login. The J-number (email local
-  part) is never shown publicly; sellers pick how they appear at `/welcome`.
+  part) is private by default and only shown publicly if a student explicitly
+  picks it as their display name; sellers choose how they appear at `/welcome`.
 - **Contact is snapshotted onto each listing** (Instagram / GroupMe). The school
   email is verification-only and never shown to buyers. Profiles are readable
   only by their owner.

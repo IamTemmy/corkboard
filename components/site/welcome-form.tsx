@@ -79,8 +79,9 @@ export function WelcomeForm({
             className="w-full rounded-lg border border-line bg-paper px-4 py-3 text-ink outline-none transition placeholder:text-ink/40 focus:border-marigold focus:ring-2 focus:ring-marigold/30"
           />
           <span className="text-xs text-ink/50">
-            A first name helps buyers recognize and trust you. Your email and
-            J-number stay private.
+            A first name helps buyers recognize and trust you. Your school email
+            always stays private; your J-number is only shown if you choose it
+            below.
           </span>
         </label>
 

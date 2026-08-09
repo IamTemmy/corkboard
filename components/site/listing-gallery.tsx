@@ -44,9 +44,11 @@ export function ListingGallery({
 
   return (
     <div className="flex flex-col gap-3 self-start">
-      {/* Main image (with the pin motif). `group` so the arrows fade in on hover. */}
+      {/* Main image (with the pin motif). `group` so the arrows fade in on hover.
+          Framed on paper-soft and height-capped so tall phone photos don't tower
+          over the details column — object-contain keeps the whole image, uncropped. */}
       <div
-        className="group relative overflow-hidden rounded-[14px] border border-line"
+        className="group relative flex max-h-[560px] items-center justify-center overflow-hidden rounded-[14px] border border-line bg-paper-soft"
         onTouchStart={multiple ? onTouchStart : undefined}
         onTouchEnd={multiple ? onTouchEnd : undefined}
         onKeyDown={
@@ -71,7 +73,7 @@ export function ListingGallery({
             src={images[active]}
             alt={alt}
             draggable={false}
-            className={`w-full select-none ${dimmed ? "opacity-60" : ""}`}
+            className={`max-h-[560px] w-auto max-w-full select-none object-contain ${dimmed ? "opacity-60" : ""}`}
           />
         ) : (
           <div

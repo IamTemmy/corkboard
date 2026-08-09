@@ -27,7 +27,7 @@ function buildChannels(contact: SellerContact): Channel[] {
     const href = groupmeHref(contact.groupme);
     channels.push({
       label: "GroupMe",
-      display: href ? "Open group" : contact.groupme,
+      display: href ? "Open chat" : contact.groupme,
       href: href ?? undefined,
       external: Boolean(href),
     });
@@ -35,6 +35,67 @@ function buildChannels(contact: SellerContact): Channel[] {
   // Note: the school email is intentionally NOT a contact channel — it's used
   // only for sign-in/verification and is never shown to buyers.
   return channels;
+}
+
+// Small brand-ish glyphs for the contact chips.
+function ChannelIcon({ label }: { label: string }) {
+  if (label === "Instagram") {
+    return (
+      <svg viewBox="0 0 24 24" className="size-5" fill="none" aria-hidden="true">
+        <rect x="3" y="3" width="18" height="18" rx="5" stroke="currentColor" strokeWidth="1.8" />
+        <circle cx="12" cy="12" r="4" stroke="currentColor" strokeWidth="1.8" />
+        <circle cx="17.5" cy="6.5" r="1.1" fill="currentColor" />
+      </svg>
+    );
+  }
+  // GroupMe → a chat bubble
+  return (
+    <svg viewBox="0 0 24 24" className="size-5" fill="none" aria-hidden="true">
+      <path
+        d="M4 5.5A1.5 1.5 0 0 1 5.5 4h13A1.5 1.5 0 0 1 20 5.5v9A1.5 1.5 0 0 1 18.5 16H9l-4 4v-4H5.5A1.5 1.5 0 0 1 4 14.5z"
+        stroke="currentColor"
+        strokeWidth="1.8"
+        strokeLinejoin="round"
+      />
+    </svg>
+  );
+}
+
+// A single contact channel rendered as a bordered chip (link when we have a
+// safe URL, plain card otherwise).
+function ChannelChip({ channel }: { channel: Channel }) {
+  const inner = (
+    <>
+      <span className="flex size-9 shrink-0 items-center justify-center rounded-lg bg-paper text-ink/70">
+        <ChannelIcon label={channel.label} />
+      </span>
+      <span className="flex flex-col">
+        <span className="text-[11px] uppercase tracking-[0.05em] text-ink/50">
+          {channel.label}
+        </span>
+        <span className="max-w-[200px] truncate text-sm font-semibold text-ink">
+          {channel.display}
+        </span>
+      </span>
+    </>
+  );
+
+  const base =
+    "flex items-center gap-3 rounded-xl border border-line bg-paper-soft px-3.5 py-2.5";
+
+  return channel.href ? (
+    <a
+      href={channel.href}
+      {...(channel.external
+        ? { target: "_blank", rel: "noopener noreferrer" }
+        : {})}
+      className={cn(base, "transition-colors hover:border-ink/30 hover:bg-paper")}
+    >
+      {inner}
+    </a>
+  ) : (
+    <div className={base}>{inner}</div>
+  );
 }
 
 export function ContactSeller({
@@ -69,36 +130,21 @@ export function ContactSeller({
     );
   }
 
-  // Unlocked — the actual channels.
+  // Unlocked — the actual channels, as chips.
   const channels = buildChannels(contact);
 
   return (
     <div className="mt-6">
-      <p className="mb-2 text-[11px] uppercase tracking-[0.06em] text-ink/55">
+      <p className="mb-2.5 text-[11px] uppercase tracking-[0.06em] text-ink/55">
         Reach {seller}
       </p>
 
       {channels.length > 0 ? (
-        <ul className="flex flex-col gap-2">
-          {channels.map((c) => (
-            <li key={c.label} className="flex items-center gap-2 text-sm">
-              <span className="text-ink/55">{c.label}:</span>
-              {c.href ? (
-                <a
-                  href={c.href}
-                  {...(c.external
-                    ? { target: "_blank", rel: "noopener noreferrer" }
-                    : {})}
-                  className="font-medium text-ink underline-offset-4 hover:underline"
-                >
-                  {c.display}
-                </a>
-              ) : (
-                <span className="font-medium text-ink">{c.display}</span>
-              )}
-            </li>
+        <div className="flex flex-wrap gap-2.5">
+          {channels.map((channel) => (
+            <ChannelChip key={channel.label} channel={channel} />
           ))}
-        </ul>
+        </div>
       ) : (
         <p className="text-sm text-ink/60">
           {seller} hasn&apos;t added a contact channel yet — check back soon.

@@ -23,38 +23,56 @@ begin
     json_build_object('sub', v_me, 'role', 'authenticated')::text, true);
   execute 'set local role authenticated';
 
+  -- 1. Edit someone else's listing → RLS blocks (0 rows; value is a no-op anyway).
   update public.listings set title = title where id = v_victim;
   get diagnostics v_rows = row_count;
-  v_out := array_append(v_out, '1 edit others listing : ' || case when v_rows=0 then 'BLOCKED ok' else 'CHANGED '||v_rows||' FAIL' end);
+  v_out := array_append(v_out, '1 edit others listing  : ' || case when v_rows=0 then 'BLOCKED ok' else 'CHANGED '||v_rows||' FAIL' end);
 
+  -- 2. Delete someone else's listing → RLS blocks (0 rows).
+  delete from public.listings where id = v_victim;
+  get diagnostics v_rows = row_count;
+  v_out := array_append(v_out, '2 delete others listing: ' || case when v_rows=0 then 'BLOCKED ok' else 'DELETED '||v_rows||' FAIL' end);
+
+  -- 3. Read another user's profile → self-only (0 rows).
   select count(*) into v_rows from public.profiles where id <> v_me;
-  v_out := array_append(v_out, '2 read others profiles: ' || case when v_rows=0 then 'BLOCKED ok' else v_rows||' visible FAIL' end);
+  v_out := array_append(v_out, '3 read others profiles : ' || case when v_rows=0 then 'BLOCKED ok' else v_rows||' visible FAIL' end);
 
+  -- 4. Spoof seller/campus → trigger overrides to the caller's profile.
   begin
     insert into public.listings (title,description,category,condition,price,images,meetup_spot,contact,seller,campus,status)
     values ('_atk','x','Electronics','New',5,array['a'],'Library','{"instagram":"x"}'::jsonb,'JSU Admin','Harvard','available')
     returning id, seller into v_id, v_seller;
-    v_out := array_append(v_out, '3 spoof seller name   : ' || case when v_seller<>'JSU Admin' then 'overridden to "'||v_seller||'" ok' else 'SPOOFED FAIL' end);
+    v_out := array_append(v_out, '4 spoof seller name    : ' || case when v_seller<>'JSU Admin' then 'overridden to "'||v_seller||'" ok' else 'SPOOFED FAIL' end);
     delete from public.listings where id = v_id;
-  exception when others then v_out := array_append(v_out, '3 spoof seller name   : insert error '||sqlerrm); end;
+  exception when others then v_out := array_append(v_out, '4 spoof seller name    : insert error '||sqlerrm); end;
 
+  -- 5. Invalid meetup spot → CHECK blocks.
   begin
     insert into public.listings (title,description,category,condition,price,images,meetup_spot,contact)
     values ('_atk','x','Electronics','New',5,array['a'],'My apartment','{"instagram":"x"}'::jsonb) returning id into v_id;
-    v_out := array_append(v_out, '4 invalid meetup spot : ALLOWED FAIL'); delete from public.listings where id=v_id;
-  exception when others then v_out := array_append(v_out, '4 invalid meetup spot : BLOCKED ok'); end;
+    v_out := array_append(v_out, '5 invalid meetup spot  : ALLOWED FAIL'); delete from public.listings where id=v_id;
+  exception when others then v_out := array_append(v_out, '5 invalid meetup spot  : BLOCKED ok'); end;
 
+  -- 6. Available listing with no usable contact → CHECK blocks.
   begin
     insert into public.listings (title,description,category,condition,price,images,meetup_spot,contact)
     values ('_atk','x','Electronics','New',5,array['a'],'Library','{}'::jsonb) returning id into v_id;
-    v_out := array_append(v_out, '5 available no contact: ALLOWED FAIL'); delete from public.listings where id=v_id;
-  exception when others then v_out := array_append(v_out, '5 available no contact: BLOCKED ok'); end;
+    v_out := array_append(v_out, '6 available no contact : ALLOWED FAIL'); delete from public.listings where id=v_id;
+  exception when others then v_out := array_append(v_out, '6 available no contact : BLOCKED ok'); end;
 
+  -- 7. Zero images → CHECK blocks.
   begin
     insert into public.listings (title,description,category,condition,price,images,meetup_spot,contact)
     values ('_atk','x','Electronics','New',5,array[]::text[],'Library','{"instagram":"x"}'::jsonb) returning id into v_id;
-    v_out := array_append(v_out, '6 zero images         : ALLOWED FAIL'); delete from public.listings where id=v_id;
-  exception when others then v_out := array_append(v_out, '6 zero images         : BLOCKED ok'); end;
+    v_out := array_append(v_out, '7 zero images          : ALLOWED FAIL'); delete from public.listings where id=v_id;
+  exception when others then v_out := array_append(v_out, '7 zero images          : BLOCKED ok'); end;
+
+  -- 8. Six images (over the max) → CHECK blocks.
+  begin
+    insert into public.listings (title,description,category,condition,price,images,meetup_spot,contact)
+    values ('_atk','x','Electronics','New',5,array['a','b','c','d','e','f'],'Library','{"instagram":"x"}'::jsonb) returning id into v_id;
+    v_out := array_append(v_out, '8 six images           : ALLOWED FAIL'); delete from public.listings where id=v_id;
+  exception when others then v_out := array_append(v_out, '8 six images           : BLOCKED ok'); end;
 
   execute 'reset role';
   insert into _authz select unnest(v_out);

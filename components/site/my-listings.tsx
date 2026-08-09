@@ -272,28 +272,32 @@ export function MyListings({ listings }: { listings: Listing[] }) {
                   </Link>
                 </Tooltip>
 
-                <Tooltip
-                  label={
-                    l.status === "reserved"
-                      ? "Un-reserve — put it back on the board"
-                      : "Reserve this item while a sale is pending"
-                  }
-                >
-                  <button
-                    type="button"
-                    disabled={busy}
-                    onClick={() =>
-                      setStatus(
-                        l.id,
-                        l.status === "reserved" ? "available" : "reserved",
-                      )
+                {/* Reserve only applies to a live item. A sold listing goes
+                    Sold → Relist → Available (then it can be reserved again). */}
+                {l.status !== "sold" && (
+                  <Tooltip
+                    label={
+                      l.status === "reserved"
+                        ? "Un-reserve — put it back on the board"
+                        : "Reserve this item while a sale is pending"
                     }
-                    className={l.status === "reserved" ? reservedActive : reservedIdle}
                   >
-                    <ReserveIcon />
-                    {l.status === "reserved" ? "Reserved" : "Mark reserved"}
-                  </button>
-                </Tooltip>
+                    <button
+                      type="button"
+                      disabled={busy}
+                      onClick={() =>
+                        setStatus(
+                          l.id,
+                          l.status === "reserved" ? "available" : "reserved",
+                        )
+                      }
+                      className={l.status === "reserved" ? reservedActive : reservedIdle}
+                    >
+                      <ReserveIcon />
+                      {l.status === "reserved" ? "Reserved" : "Mark reserved"}
+                    </button>
+                  </Tooltip>
+                )}
 
                 <Tooltip
                   label={

@@ -90,12 +90,15 @@ user cases need two real accounts (Student A owns a listing; Student B attacks).
 **Authenticated (verified 2026-08-09 via SQL role-simulation — see
 `supabase/tests/authz-check.sql`; run against real 2 accounts once Resend is set):**
 - ✅ UPDATE another user's listing → blocked (0 rows)
-- ✅ DELETE another user's listing → blocked (same ownership policy as UPDATE)
+- ✅ DELETE another user's listing → blocked (0 rows)
 - ✅ read another user's profile → blocked (self-only)
 - ✅ create listing with spoofed `seller`/`campus` → DB overrides to own profile
 - ✅ create listing with invalid `meetup_spot` → blocked (CHECK)
 - ✅ create listing with `contact: {}` while available → blocked (CHECK)
-- ✅ create listing with 0 (or 6+) images → blocked (CHECK)
+- ✅ create listing with 0 images → blocked (CHECK)
+- ✅ create listing with 6 images (over max) → blocked (CHECK)
+
+_(Re-run `supabase/tests/authz-check.sql` any time to reproduce all eight.)_
 
 **Still to confirm with two real accounts (Path A, after Resend domain):**
 - ⬜ delete A's Storage image as B → must fail (folder-scoped policy)

@@ -64,10 +64,11 @@ must not be committed.
 
 The database, auth, and storage are configured in `supabase/`:
 
-- Run the SQL files in the Supabase SQL editor **in filename order**
-  (`auth-and-profiles.sql`, then every numbered migration `002-…` through the
-  highest — currently `010-…`). Each is re-runnable. Note `008`/`010` are
-  security migrations (contact privacy, authorization hardening) — don't stop early.
+- Run the SQL files in the Supabase SQL editor **in ascending filename order**:
+  `auth-and-profiles.sql` first, then **every** numbered migration (`002-…`,
+  `003-…`, and so on to the end). Each is re-runnable. Several of the later ones
+  are security migrations (contact privacy, authorization hardening) — run them
+  all, don't stop early.
 - Complete the dashboard-only steps (SMTP for the OTP email, OTP length, the
   auth hook wiring) documented in [`supabase/DASHBOARD-SETUP.md`](supabase/DASHBOARD-SETUP.md).
 

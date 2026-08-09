@@ -97,18 +97,16 @@ export async function getListingById(id: string): Promise<Listing | undefined> {
   return mapRow(data as ListingRow);
 }
 
-/** A listing's seller contact (Instagram/GroupMe). Kept separate from the main
- *  listing query so contact never rides along in a public payload — the anon
- *  role can't read this column, so only call this for a signed-in (verified)
- *  student. Returns {} if unavailable. */
+/** A listing's seller contact (Instagram/GroupMe), via a gated RPC that returns
+ *  it only for an available listing to an authenticated caller (see
+ *  supabase/010). No role can read the contact column directly — not even
+ *  authenticated — so this is the only path to it. Returns {} if unavailable. */
 export async function getListingContact(id: string): Promise<SellerContact> {
   const supabase = await createClient();
-  const { data, error } = await supabase
-    .from("listings")
-    .select("contact")
-    .eq("id", id)
-    .maybeSingle();
+  const { data, error } = await supabase.rpc("get_listing_contact", {
+    p_listing_id: id,
+  });
 
   if (error || !data) return {};
-  return ((data as { contact: SellerContact | null }).contact) ?? {};
+  return (data as SellerContact) ?? {};
 }

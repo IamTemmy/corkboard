@@ -71,8 +71,9 @@ for (const group of SYNONYM_GROUPS) {
   }
 }
 
-function escapeRegExp(s: string): string {
-  return s.replace(/[.*+?^${}()|[\]\\]/g, "\\$&");
+// Split text into lowercase word tokens (letters/digits), dropping punctuation.
+function tokenize(text: string): string[] {
+  return text.split(/[^a-z0-9]+/).filter(Boolean);
 }
 
 // All the words a single query term should also match: its synonyms, each in
@@ -97,32 +98,10 @@ function variantsOf(term: string): Set<string> {
   return set;
 }
 
-// Does a term (via any of its variants) appear in this text? Whole-word match
-// so a synonym like "tee" can't hide inside "canteen"; a raw substring fallback
-// still allows partial typing ("head" → "headphones") and model numbers.
-function termMatches(term: string, text: string): boolean {
-  for (const variant of variantsOf(term)) {
-    if (variant.includes(" ")) {
-      if (text.includes(variant)) return true;
-    } else if (new RegExp(`\\b${escapeRegExp(variant)}\\b`).test(text)) {
-      return true;
-    }
-  }
-  return term.length >= 3 && text.includes(term);
-}
-
-// Only the term itself (+ singular/plural), no synonyms — used to detect a
-// *direct* title hit for ranking.
-function rawMatches(term: string, text: string): boolean {
-  for (const form of [singular(term), plural(singular(term))]) {
-    if (new RegExp(`\\b${escapeRegExp(form)}\\b`).test(text)) return true;
-  }
-  return term.length >= 3 && text.includes(term);
-}
-
-// Everything a shopper might name, joined into one lowercase blob to search.
-function haystackOf(listing: Listing): string {
-  return [
+// The searchable content of a listing: one lowercase blob plus its word tokens.
+type Fields = { text: string; words: string[] };
+function fieldsOf(listing: Listing): Fields {
+  const text = [
     listing.title,
     listing.category,
     listing.condition,
@@ -132,16 +111,40 @@ function haystackOf(listing: Listing): string {
   ]
     .join(" ")
     .toLowerCase();
+  return { text, words: tokenize(text) };
+}
+
+// Does a query term match these fields? Two ways, both intuitive as you type:
+//   1. a synonym/brand variant equals a whole word (or, for phrases like "air
+//      force", appears in the text) — so "sneaker" pulls in the shoe family;
+//   2. the raw term is a PREFIX of some word — so typing "sne"→"sneak"→"sneaker"
+//      narrows smoothly instead of the results jumping around.
+function termMatches(term: string, { text, words }: Fields): boolean {
+  for (const variant of variantsOf(term)) {
+    if (variant.includes(" ")) {
+      if (text.includes(variant)) return true;
+    } else if (words.includes(variant)) {
+      return true;
+    }
+  }
+  return words.some((word) => word.startsWith(term));
+}
+
+// The term itself only (no synonyms) — used to spot a *direct* title hit.
+function rawMatches(term: string, { text, words }: Fields): boolean {
+  for (const form of [singular(term), plural(singular(term)), term]) {
+    if (form.includes(" ") ? text.includes(form) : words.includes(form)) return true;
+  }
+  return words.some((word) => word.startsWith(term));
 }
 
 // Higher = better. A direct title hit beats a synonym title hit, which beats a
 // match found only in the description/other fields.
-function scoreOf(listing: Listing, terms: string[]): number {
-  const title = listing.title.toLowerCase();
+function scoreOf(titleFields: Fields, terms: string[]): number {
   let score = 0;
   for (const term of terms) {
-    if (rawMatches(term, title)) score += 3;
-    else if (termMatches(term, title)) score += 2;
+    if (rawMatches(term, titleFields)) score += 3;
+    else if (termMatches(term, titleFields)) score += 2;
     else score += 1;
   }
   return score;
@@ -157,11 +160,19 @@ export function searchListings(listings: Listing[], query: string): Listing[] {
   if (terms.length === 0) return listings;
 
   return listings
-    .filter((listing) => {
-      const hay = haystackOf(listing);
-      return terms.every((term) => termMatches(term, hay));
+    .map((listing, index) => ({
+      listing,
+      index,
+      fields: fieldsOf(listing),
+    }))
+    .filter((entry) => terms.every((term) => termMatches(term, entry.fields)))
+    .map((entry) => {
+      const titleFields: Fields = {
+        text: entry.listing.title.toLowerCase(),
+        words: tokenize(entry.listing.title.toLowerCase()),
+      };
+      return { ...entry, score: scoreOf(titleFields, terms) };
     })
-    .map((listing, index) => ({ listing, index, score: scoreOf(listing, terms) }))
     // Sort by score desc; ties keep their original (newest-first) order.
     .sort((a, b) => b.score - a.score || a.index - b.index)
     .map((entry) => entry.listing);

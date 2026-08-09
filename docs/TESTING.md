@@ -34,6 +34,7 @@ Legend: ✅ passing · ❌ failing · ⬜ not yet tested
 - ✅ Sold items are absent from the board; reserved remain visible
 - ⬜ "Free" chip shows $0 items (Stage 3)
 - ✅ Available item shows contact to a signed-in student
+- ✅ Search covers title + description + more, with synonyms (shoe↔sneaker↔footwear, tv↔roku) and singular/plural; title hits rank first (Stage 4 tweak)
 - ⬜ GroupMe: only real groupme.com links are clickable; junk is rejected on save (Stage 1)
 
 ### Identity & contact

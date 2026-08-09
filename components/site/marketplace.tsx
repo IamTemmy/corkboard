@@ -3,6 +3,7 @@
 import { useState } from "react";
 import Link from "next/link";
 import type { Listing } from "@/lib/listings";
+import { searchListings } from "@/lib/search";
 import { SearchBar } from "./search-bar";
 import { CategoryChips } from "./category-chips";
 import { ListingGrid } from "./listing-grid";
@@ -21,37 +22,18 @@ export function Marketplace({
   const [category, setCategory] = useState("All");
   const [query, setQuery] = useState("");
 
-  // Split the query into words so "nike shoe" can match a listing where "nike"
-  // is in the title and "shoe" in the description — each word must appear
-  // somewhere, but not as one contiguous phrase.
-  const terms = query.trim().toLowerCase().split(/\s+/).filter(Boolean);
-
-  const visibleListings = listings.filter((listing) => {
+  // First narrow by the selected category chip...
+  const byCategory = listings.filter((listing) => {
     // "Free" is a price state, not a real category — filter it by price.
-    const matchesCategory =
-      category === "All"
-        ? true
-        : category === "Free"
-          ? listing.price === 0
-          : listing.category === category;
-
-    // Search across everything a shopper might name — most importantly the
-    // description, where words like "shoes" or "size 8" actually live (the
-    // title is often just a brand + model). No query = everything matches.
-    const haystack = [
-      listing.title,
-      listing.category,
-      listing.condition,
-      listing.description,
-      listing.meetupSpot,
-      listing.seller,
-    ]
-      .join(" ")
-      .toLowerCase();
-    const matchesQuery = terms.every((term) => haystack.includes(term));
-
-    return matchesCategory && matchesQuery;
+    if (category === "All") return true;
+    if (category === "Free") return listing.price === 0;
+    return listing.category === category;
   });
+
+  // ...then apply search: matches across title/description/etc. with synonyms
+  // and singular/plural handling, ranked so title hits come first (see
+  // lib/search.ts). An empty query leaves the newest-first order untouched.
+  const visibleListings = searchListings(byCategory, query);
 
   return (
     <>

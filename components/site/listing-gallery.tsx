@@ -45,10 +45,11 @@ export function ListingGallery({
   return (
     <div className="flex flex-col gap-3 self-start">
       {/* Main image (with the pin motif). `group` so the arrows fade in on hover.
-          Framed on paper-soft and height-capped so tall phone photos don't tower
-          over the details column — object-contain keeps the whole image, uncropped. */}
+          A fixed 4:5 cover box (like the cards) so portrait phone photos fill
+          cleanly without letterbox side-bars — a small symmetric crop instead;
+          other angles stay reachable via the thumbnails/swipe. */}
       <div
-        className="group relative flex max-h-[560px] items-center justify-center overflow-hidden rounded-[14px] border border-line bg-paper-soft"
+        className="group relative aspect-[4/5] w-full overflow-hidden rounded-[14px] border border-line bg-paper-soft"
         onTouchStart={multiple ? onTouchStart : undefined}
         onTouchEnd={multiple ? onTouchEnd : undefined}
         onKeyDown={
@@ -73,11 +74,11 @@ export function ListingGallery({
             src={images[active]}
             alt={alt}
             draggable={false}
-            className={`max-h-[560px] w-auto max-w-full select-none object-contain ${dimmed ? "opacity-60" : ""}`}
+            className={`h-full w-full select-none object-cover ${dimmed ? "opacity-60" : ""}`}
           />
         ) : (
           <div
-            className="flex aspect-[4/5] w-full items-center justify-center text-[13px] font-medium text-ink/35"
+            className="flex h-full w-full items-center justify-center text-[13px] font-medium text-ink/35"
             style={{ background: "linear-gradient(135deg, #DCD3BE, #EDE6D6)" }}
           >
             Photo

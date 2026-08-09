@@ -117,7 +117,7 @@ export function ReportListing({
         <button
           type="button"
           onClick={() => setOpen(true)}
-          className="inline-flex items-center gap-1.5 text-xs text-ink/55 underline-offset-4 transition-colors hover:text-ink hover:underline"
+          className="inline-flex items-center gap-1.5 text-xs font-medium text-brick underline-offset-4 transition-colors hover:text-brick/80 hover:underline"
         >
           <FlagIcon />
           Report listing

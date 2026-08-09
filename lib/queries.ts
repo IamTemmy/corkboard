@@ -14,11 +14,20 @@ type ListingRow = {
   seller: string;
   campus: string;
   meetup_spot: string;
-  contact: SellerContact | null;
+  // Contact is NOT selected for the board/detail — it's fetched separately and
+  // only for signed-in users (see getListingContact). Anon can't read this
+  // column at all (column-level grant in supabase/008), so we never request it.
+  contact?: SellerContact | null;
   status: ListingStatus;
   seller_id: string | null;
   sold_at: string | null;
 };
+
+// Every listing column EXCEPT `contact`. Selecting these explicitly (rather than
+// "*") keeps the seller's contact out of any public payload, and matches the
+// column privileges granted to the anon role.
+const LISTING_COLUMNS =
+  "id, created_at, title, description, category, condition, price, images, seller, campus, meetup_spot, status, seller_id, sold_at";
 
 // Translate a database row into the app's Listing shape (camelCase).
 function mapRow(row: ListingRow): Listing {
@@ -34,6 +43,7 @@ function mapRow(row: ListingRow): Listing {
     sellerId: row.seller_id ?? null,
     campus: row.campus,
     meetupSpot: row.meetup_spot as MeetupSpot,
+    // Contact is loaded separately (getListingContact) for signed-in users only.
     contact: row.contact ?? {},
     status: row.status,
     postedAt: row.created_at,
@@ -47,7 +57,7 @@ export async function getListings(): Promise<Listing[]> {
   const supabase = await createClient();
   const { data, error } = await supabase
     .from("listings")
-    .select("*")
+    .select(LISTING_COLUMNS)
     .neq("status", "sold")
     .order("created_at", { ascending: false });
 
@@ -63,7 +73,7 @@ export async function getListingsBySeller(sellerId: string): Promise<Listing[]> 
   const supabase = await createClient();
   const { data, error } = await supabase
     .from("listings")
-    .select("*")
+    .select(LISTING_COLUMNS)
     .eq("seller_id", sellerId)
     .order("created_at", { ascending: false });
 
@@ -79,10 +89,26 @@ export async function getListingById(id: string): Promise<Listing | undefined> {
   const supabase = await createClient();
   const { data, error } = await supabase
     .from("listings")
-    .select("*")
+    .select(LISTING_COLUMNS)
     .eq("id", id)
     .maybeSingle();
 
   if (error || !data) return undefined;
   return mapRow(data as ListingRow);
+}
+
+/** A listing's seller contact (Instagram/GroupMe). Kept separate from the main
+ *  listing query so contact never rides along in a public payload — the anon
+ *  role can't read this column, so only call this for a signed-in (verified)
+ *  student. Returns {} if unavailable. */
+export async function getListingContact(id: string): Promise<SellerContact> {
+  const supabase = await createClient();
+  const { data, error } = await supabase
+    .from("listings")
+    .select("contact")
+    .eq("id", id)
+    .maybeSingle();
+
+  if (error || !data) return {};
+  return ((data as { contact: SellerContact | null }).contact) ?? {};
 }

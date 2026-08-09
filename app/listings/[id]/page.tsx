@@ -7,7 +7,7 @@ import { ListingGallery } from "@/components/site/listing-gallery";
 import { ContactSeller } from "@/components/site/contact-seller";
 import { ReportListing } from "@/components/site/report-listing";
 import { formatPostedAt, formatPrice } from "@/lib/listings";
-import { getListingById, getListings } from "@/lib/queries";
+import { getListingById, getListingContact, getListings } from "@/lib/queries";
 import { createClient } from "@/lib/supabase/server";
 
 // `params` for a dynamic route arrives as a Promise in the App Router.
@@ -46,10 +46,10 @@ export default async function ListingPage({ params }: ListingPageProps) {
     data: { user },
   } = await supabase.auth.getUser();
 
-  // Contact is snapshotted onto the listing (Instagram/GroupMe) and kept in sync
-  // from Settings, so we never read another user's profile here. The email is
-  // never part of this — it's sign-in only.
-  const contact = listing.contact;
+  // Contact is fetched separately and ONLY for a signed-in (verified) student
+  // viewing an available listing — it never rides along in the public payload,
+  // and the anon role can't read the column at the DB either (supabase/008).
+  const contact = user && isAvailable ? await getListingContact(listing.id) : {};
 
   // Suggest up to 4 other listings below. Prefer the same category, then top up
   // with other recent listings so the row never strands a lone card in an empty

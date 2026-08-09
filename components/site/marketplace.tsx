@@ -21,7 +21,11 @@ export function Marketplace({
   const [category, setCategory] = useState("All");
   const [query, setQuery] = useState("");
 
-  const q = query.trim().toLowerCase();
+  // Split the query into words so "nike shoe" can match a listing where "nike"
+  // is in the title and "shoe" in the description — each word must appear
+  // somewhere, but not as one contiguous phrase.
+  const terms = query.trim().toLowerCase().split(/\s+/).filter(Boolean);
+
   const visibleListings = listings.filter((listing) => {
     // "Free" is a price state, not a real category — filter it by price.
     const matchesCategory =
@@ -30,10 +34,22 @@ export function Marketplace({
         : category === "Free"
           ? listing.price === 0
           : listing.category === category;
-    const matchesQuery =
-      q === "" ||
-      listing.title.toLowerCase().includes(q) ||
-      listing.category.toLowerCase().includes(q);
+
+    // Search across everything a shopper might name — most importantly the
+    // description, where words like "shoes" or "size 8" actually live (the
+    // title is often just a brand + model). No query = everything matches.
+    const haystack = [
+      listing.title,
+      listing.category,
+      listing.condition,
+      listing.description,
+      listing.meetupSpot,
+      listing.seller,
+    ]
+      .join(" ")
+      .toLowerCase();
+    const matchesQuery = terms.every((term) => haystack.includes(term));
+
     return matchesCategory && matchesQuery;
   });
 

@@ -166,11 +166,25 @@ export function NewListingForm({
     //    contact is snapshotted per listing — sync it onto existing listings too,
     //    so changing it here doesn't leave old listings on the old handle.
     if (ig !== initialInstagram || gm !== initialGroupme) {
-      await supabase
+      const { error: profileError } = await supabase
         .from("profiles")
         .update({ instagram: ig || null, groupme: gm || null })
         .eq("id", userId);
-      await syncSellerListings(supabase, userId, { contact });
+      if (profileError) {
+        await supabase.storage.from("listing-images").remove(uploadedPaths);
+        setSaving(false);
+        setError("Couldn't save your contact — please try again.");
+        return;
+      }
+      const { error: syncError } = await syncSellerListings(supabase, userId, {
+        contact,
+      });
+      if (syncError) {
+        await supabase.storage.from("listing-images").remove(uploadedPaths);
+        setSaving(false);
+        setError("Couldn't update your other listings — please try again.");
+        return;
+      }
     }
 
     // 3. Create the listing, owned by this student.

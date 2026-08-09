@@ -1,8 +1,9 @@
 # Corkboard — test log
 
-How we verify the app. Manual for now; an automated Playwright suite + CI come in
-a later stage. Keep this updated — check items as they're verified, and add a row
-to the **Deployment test log** after each production deploy.
+How we verify the app. A Playwright smoke suite runs in CI on every push
+(`npm run test:e2e`); the checks below are the manual ones on top of it. Keep
+this updated — check items as they're verified, and add a row to the
+**Deployment test log** after each production deploy.
 
 Legend: ✅ passing · ❌ failing · ⬜ not yet tested
 
@@ -69,6 +70,34 @@ a second account (Student B) against Student A's listing:
 - ⬜ Reporting the same listing twice shows the thank-you, doesn't error (dedup)
 - ⬜ Reports are NOT readable via the client API — only in the dashboard (RLS)
 - ⬜ B can report A's listing; the row's reporter_id is B (attacker/RLS check)
+
+---
+
+## Security / attacker matrix
+
+Prove the database rejects hostile requests, not just the UI. Anonymous cases
+were verified live against the REST API (all denied). The authenticated cross-
+user cases need two real accounts (Student A owns a listing; Student B attacks).
+
+**Anonymous (verified 2026-08-09 — all 401):**
+- ✅ read `contact` column → denied
+- ✅ INSERT listing → denied
+- ✅ UPDATE listing → denied
+- ✅ invoke `get_listing_contact` RPC → denied
+- ✅ INSERT report → denied
+- ✅ (sanity) read `title` → allowed
+
+**Authenticated — Student B against Student A (run these):**
+- ⬜ UPDATE A's listing → must fail
+- ⬜ DELETE A's listing → must fail
+- ⬜ delete A's Storage image → must fail
+- ⬜ read A's profile row → must fail (self-only)
+- ⬜ report own listing → must fail
+- ⬜ create listing with spoofed `seller`/`campus` → DB overrides to B's profile
+- ⬜ create listing with invalid `meetup_spot` → must fail
+- ⬜ create/patch listing to `contact: {}` while available → must fail
+- ⬜ create listing with 0 or 6+ images → must fail
+- ⬜ (happy path) B reports A's listing once → succeeds; a second time → dedup
 
 ---
 

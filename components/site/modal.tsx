@@ -31,6 +31,17 @@ export function Modal({
   className?: string;
 }) {
   const cardRef = useRef<HTMLDivElement>(null);
+  // Keep the latest callback/flag in refs so the focus effect can depend on
+  // `open` ALONE. Otherwise a parent that passes an inline onClose (e.g. the
+  // report form) re-fires this effect on every keystroke, yanking focus out of
+  // the field being typed in.
+  const onCloseRef = useRef(onClose);
+  const dismissableRef = useRef(dismissable);
+  // Keep refs current without touching them during render (runs after each render).
+  useEffect(() => {
+    onCloseRef.current = onClose;
+    dismissableRef.current = dismissable;
+  });
 
   useEffect(() => {
     if (!open) return;
@@ -55,7 +66,7 @@ export function Modal({
 
     function onKey(e: KeyboardEvent) {
       if (e.key === "Escape") {
-        if (dismissable) onClose();
+        if (dismissableRef.current) onCloseRef.current();
         return;
       }
       if (e.key === "Tab") {
@@ -81,7 +92,7 @@ export function Modal({
       document.body.style.overflow = prevOverflow;
       opener?.focus?.();
     };
-  }, [open, dismissable, onClose]);
+  }, [open]);
 
   if (!open) return null;
 

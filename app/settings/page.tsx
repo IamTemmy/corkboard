@@ -26,11 +26,13 @@ export default async function SettingsPage() {
     .eq("id", user.id)
     .maybeSingle();
 
-  // Whether the user has any listings — if so, they can't clear all contact.
+  // Whether the user has any ACTIVE listings — if so, they can't clear all
+  // contact (buyers couldn't reach them). Sold history doesn't count.
   const { count: listingCount } = await supabase
     .from("listings")
     .select("id", { count: "exact", head: true })
-    .eq("seller_id", user.id);
+    .eq("seller_id", user.id)
+    .neq("status", "sold");
 
   const memberSince = profile?.created_at
     ? new Date(profile.created_at).toLocaleDateString("en-US", {

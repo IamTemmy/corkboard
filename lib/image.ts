@@ -33,8 +33,12 @@ export async function processImageForUpload(file: File): Promise<File> {
     source = Array.isArray(converted) ? converted[0] : converted;
   }
 
-  // 2. Downscale + compress on a canvas.
-  const bitmap = await createImageBitmap(source);
+  // 2. Downscale + compress on a canvas. `imageOrientation: "from-image"` makes
+  //    the bitmap honor the EXIF orientation tag — without it, WebKit/iOS Safari
+  //    can draw portrait iPhone photos sideways.
+  const bitmap = await createImageBitmap(source, {
+    imageOrientation: "from-image",
+  });
   const scale = Math.min(
     1,
     MAX_DIMENSION / Math.max(bitmap.width, bitmap.height),

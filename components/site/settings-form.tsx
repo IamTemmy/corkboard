@@ -74,8 +74,10 @@ export function SettingsForm({
     const { error: profileError } = await supabase
       .from("profiles")
       .update({
-        // Blank name → null, which falls back to the J-number in the UI.
-        display_name: name || null,
+        // Blank name → store the J-number itself (same as the Welcome step), so
+        // display_name is never null after onboarding. A null would make /new
+        // think onboarding is unfinished and bounce the user to /welcome.
+        display_name: displayValue,
         instagram: ig || null,
         groupme: gm || null,
       })
@@ -164,7 +166,7 @@ export function SettingsForm({
         >
           {saving ? "Saving…" : "Save changes"}
         </Button>
-        {saved && <span className="text-sm text-moss">Saved ✓</span>}
+        {saved && <span className="text-sm text-moss-text">Saved ✓</span>}
       </div>
     </form>
   );

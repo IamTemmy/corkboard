@@ -49,7 +49,7 @@ export default function GuidelinesPage() {
     <>
       <Nav />
       <main className="mx-auto w-full max-w-5xl px-6 py-14 sm:px-12">
-        <span className="mb-6 inline-block rounded-full bg-moss/12 px-3.5 py-1.5 text-xs font-medium text-moss">
+        <span className="mb-6 inline-block rounded-full bg-moss/12 px-3.5 py-1.5 text-xs font-medium text-moss-text">
           Keeping Corkboard safe and useful
         </span>
         <h1 className="font-display mb-3 max-w-[640px] text-[34px] font-semibold leading-[1.15] tracking-[-0.01em] sm:text-[44px]">

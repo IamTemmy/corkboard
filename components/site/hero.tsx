@@ -2,7 +2,7 @@ export function Hero() {
   return (
     <section className="px-6 pt-16 text-center sm:px-12">
       {/* Trust line — the verification promise, in moss on a soft moss tint */}
-      <span className="mb-6 inline-block rounded-full bg-moss/12 px-3.5 py-1.5 text-xs font-medium text-moss">
+      <span className="mb-6 inline-block rounded-full bg-moss/12 px-3.5 py-1.5 text-xs font-medium text-moss-text">
         Only verified students at your campus can list or contact sellers
       </span>
 

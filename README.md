@@ -65,7 +65,9 @@ must not be committed.
 The database, auth, and storage are configured in `supabase/`:
 
 - Run the SQL files in the Supabase SQL editor **in filename order**
-  (`auth-and-profiles.sql`, then `002-…` through `007-…`). Each is re-runnable.
+  (`auth-and-profiles.sql`, then every numbered migration `002-…` through the
+  highest — currently `010-…`). Each is re-runnable. Note `008`/`010` are
+  security migrations (contact privacy, authorization hardening) — don't stop early.
 - Complete the dashboard-only steps (SMTP for the OTP email, OTP length, the
   auth hook wiring) documented in [`supabase/DASHBOARD-SETUP.md`](supabase/DASHBOARD-SETUP.md).
 
@@ -81,6 +83,7 @@ The database, auth, and storage are configured in `supabase/`:
 | `npm run build` | Production build |
 | `npm run start` | Serve the production build |
 | `npm run lint` | Run ESLint |
+| `npm run test:e2e` | Run the Playwright smoke suite |
 
 ## Project structure
 

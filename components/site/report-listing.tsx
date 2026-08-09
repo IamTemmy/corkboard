@@ -115,7 +115,7 @@ export function ReportListing({
   return (
     <div className="mt-8 border-t border-line pt-6">
       {reported ? (
-        <span className="inline-flex items-center gap-1.5 text-xs font-medium text-moss">
+        <span className="inline-flex items-center gap-1.5 text-xs font-medium text-moss-text">
           <FlagIcon />
           Reported — thanks
         </span>

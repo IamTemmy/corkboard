@@ -19,7 +19,8 @@
   --color-paper: #f7f1e6; /* Warm Paper — page background */
   --color-paper-soft: #fbf8f2; /* Warm Paper (soft) — cards & surfaces */
   --color-marigold: #e7a93b; /* Marigold — accent / search button */
-  --color-moss: #6e8c6a; /* Moss — trust / "Verified" */
+  --color-moss: #6e8c6a; /* Moss — trust / success (fills, accents) */
+  --color-moss-text: #567451; /* Darker moss — for small text, meets AA on paper */
   --color-brick: #b24a34; /* Brick — the pin on each card */
   --color-line: #e4dcc9; /* Hairline borders */
 

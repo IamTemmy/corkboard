@@ -19,7 +19,7 @@ function imageStoragePath(publicUrl: string): string | null {
 }
 
 const statusStyles: Record<ListingStatus, string> = {
-  available: "bg-moss/12 text-moss",
+  available: "bg-moss/12 text-moss-text",
   reserved: "bg-marigold/20 text-ink",
   sold: "bg-ink text-paper",
 };
@@ -39,7 +39,7 @@ const editBtn = `${baseBtn} border-[#3b6fa0]/45 text-[#3b6fa0] hover:border-[#3b
 const deleteBtn = `${baseBtn} border-brick/40 text-brick hover:border-brick/60 hover:bg-brick/8`;
 const reservedIdle = `${baseBtn} border-[#c8912e]/55 text-[#a9781a] hover:bg-marigold/12`;
 const reservedActive = `${baseBtn} border-transparent bg-marigold font-semibold text-ink hover:bg-marigold/90`;
-const soldIdle = `${baseBtn} border-ink/30 text-ink/70 hover:border-moss/60 hover:bg-moss/8 hover:text-moss`;
+const soldIdle = `${baseBtn} border-ink/30 text-ink/70 hover:border-moss/60 hover:bg-moss/8 hover:text-moss-text`;
 const soldActive = `${baseBtn} border-transparent bg-moss font-semibold text-paper hover:bg-moss/90`;
 
 const iconClass = "size-3.5 shrink-0";

@@ -95,7 +95,8 @@ export async function Nav() {
           into the mobile menu). justify-end keeps it pinned to the right edge of
           its grid column so the centre nav links stay truly page-centred. */}
       {/* The corner is account-only now; "+ List an item" lives beside Search on
-          the home page and in the account menu / mobile menu elsewhere. */}
+          the home page and on the My Listings page — the account and mobile
+          menus stay navigation-only rather than repeating that CTA. */}
       <div className="hidden items-center gap-4 sm:flex sm:justify-end">
         {displayName ? (
           <AccountMenu name={displayName} />

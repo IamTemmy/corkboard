@@ -103,16 +103,21 @@ export function MobileMenu({
             </Link>
           )}
 
-          {/* Primary action last, set off with a little space. Signed-in
-              students list an item; signed-out visitors sign up (same /join
-              flow that creates the account). */}
-          <Link
-            href={authName ? "/new" : "/join"}
-            onClick={() => setOpen(false)}
-            className="mt-2 flex items-center justify-center rounded-lg bg-ink px-4 py-3 text-sm font-semibold text-paper"
-          >
-            {authName ? "+ List an item" : "Sign up"}
-          </Link>
+          {/* Signed-out visitors get a Sign up button to set off the auth
+              flow. For signed-in students we deliberately DON'T repeat
+              "+ List an item" here — it's already the big CTA beside Search on
+              the home page (and on My Listings), so putting it in the menu too
+              just stacks two identical primary buttons. The menu is navigation,
+              not a second copy of the page's main action. */}
+          {!authName && (
+            <Link
+              href="/join"
+              onClick={() => setOpen(false)}
+              className="mt-2 flex items-center justify-center rounded-lg bg-ink px-4 py-3 text-sm font-semibold text-paper"
+            >
+              Sign up
+            </Link>
+          )}
         </div>
       )}
     </div>

@@ -57,10 +57,13 @@ export default async function ListingPage({ params }: ListingPageProps) {
   const all = await getListings();
   const others = all.filter((other) => other.id !== listing.id);
   const sameCategory = others.filter((other) => other.category === listing.category);
-  const related = [
-    ...sameCategory,
-    ...others.filter((other) => other.category !== listing.category),
-  ].slice(0, 4);
+  // Backfill with the OLDEST other listings (getListings is newest-first, so we
+  // reverse). The homepage already spotlights the newest, so this surfaces the
+  // tail instead of repeating it — and gives older, still-available items a look.
+  const backfill = others
+    .filter((other) => other.category !== listing.category)
+    .reverse();
+  const related = [...sameCategory, ...backfill].slice(0, 4);
   // Only call it "More in <category>" when every card really is that category;
   // once we've topped up with other items, it's just "Keep browsing".
   const relatedAllSameCategory =

@@ -16,7 +16,7 @@ import type { Listing } from "./listings";
 // Central and extensible: add a row as students use new words for things.
 // Not meant to be exhaustive; it just covers the common campus-resale cases.
 const SYNONYM_GROUPS: string[][] = [
-  ["shoe", "sneaker", "trainer", "footwear"],
+  ["shoe", "sneaker", "trainer", "footwear", "kicks"],
   ["couch", "sofa", "sectional", "loveseat", "futon"],
   ["tv", "television", "roku"],
   ["fridge", "refrigerator"],
@@ -27,7 +27,31 @@ const SYNONYM_GROUPS: string[][] = [
   ["book", "textbook"],
   ["backpack", "bookbag"],
   ["bike", "bicycle"],
+  // Model aliases so typing it short still finds the full name.
+  ["af1", "air force", "air force one"],
 ];
+
+// One-directional hints: searching a general TYPE word (the key) ALSO matches
+// items named only by brand or model — so "shoe" finds a listing titled just
+// "Nike Air Force 1" or "Suede Sandals" that never says "shoe". It does NOT go
+// the other way: searching "nike" stays literal and won't return every sneaker.
+//
+// Precision/recall note: model names (air force, jordan, yeezy) and shoe-only
+// brands (converse, vans, crocs) are safe. General brands (nike, adidas, puma)
+// widen the net most but can occasionally surface that brand's apparel under a
+// "shoe" search — trim them here if that ever gets noisy.
+const TYPE_INDICATORS: Record<string, string[]> = {
+  shoe: [
+    // brands
+    "nike", "adidas", "puma", "jordan", "new balance", "converse", "vans",
+    "crocs", "reebok", "asics", "saucony", "birkenstock", "timberland",
+    // models / lines
+    "air force", "af1", "air max", "dunk", "yeezy", "samba", "gazelle",
+    "superstar", "ultraboost", "mayze", "550", "990", "9060",
+    // other footwear types
+    "sandal", "slide", "cleat", "boot", "loafer", "moccasin", "flip flop",
+  ],
+};
 
 // Naive singular/plural: enough for everyday nouns without a stemming library.
 function singular(word: string): string {
@@ -57,10 +81,18 @@ function variantsOf(term: string): Set<string> {
   const base = singular(term);
   const group = SYNONYM_LOOKUP.get(base) ?? [term];
   const set = new Set<string>();
-  for (const word of [...group, term]) {
+  const add = (word: string) => {
     const s = singular(word);
     set.add(s);
     set.add(plural(s));
+  };
+  for (const word of [...group, term]) add(word);
+  // If this is a general type word (e.g. "shoe"/"sneaker" — both in the shoe
+  // group, which contains the key "shoe"), also match brand/model indicators.
+  // One-directional: indicators are never keys, so searching a brand won't pull
+  // in the whole type.
+  for (const member of group) {
+    for (const indicator of TYPE_INDICATORS[singular(member)] ?? []) add(indicator);
   }
   return set;
 }

@@ -5,7 +5,7 @@ import { Footer } from "@/components/site/footer";
 import { ListingCard } from "@/components/site/listing-card";
 import { ListingGallery } from "@/components/site/listing-gallery";
 import { ListingDescription } from "@/components/site/listing-description";
-import { ContactSeller } from "@/components/site/contact-seller";
+import { ContactSeller, MeetSafelyNote } from "@/components/site/contact-seller";
 import { ReportListing } from "@/components/site/report-listing";
 import { formatPostedAt, formatPrice } from "@/lib/listings";
 import { getListingById, getListingContact, getListings } from "@/lib/queries";
@@ -173,6 +173,11 @@ export default async function ListingPage({ params }: ListingPageProps) {
                 blue, matching My Listings); everyone else gets Report, or a
                 sign-in nudge when signed out. */}
             <div className="mt-auto">
+              {/* Meet-safely note sits with the closing actions, not under the
+                  contact chips — an end-of-visit reminder. Shown to signed-in
+                  students on an available listing (the signed-out lock copy
+                  already carries the safety line). */}
+              {isAvailable && user && <MeetSafelyNote />}
               {isOwner ? (
                 <div className="mt-8 border-t border-line pt-6">
                   <Link

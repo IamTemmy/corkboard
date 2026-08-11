@@ -204,17 +204,22 @@ export function ContactSeller({
           {seller} hasn&apos;t added a contact channel yet — check back soon.
         </p>
       )}
+    </div>
+  );
+}
 
-      {/* Softened: no heavy card — just the shield + green text, so it reads as
-          a gentle reminder rather than a third boxed section competing with the
-          location and contact blocks. */}
-      <div className="mt-4 flex max-w-md items-start gap-2">
-        <ShieldCheckIcon />
-        <p className="text-xs leading-relaxed text-moss-text">
-          Agree on a time, then meet at the campus spot above — it&apos;s fine to
-          bring a friend.
-        </p>
-      </div>
+// The "meet safely" reminder — shield + soft green text. Rendered at the BOTTOM
+// of the details column (beside Report / Edit), not under the contact chips:
+// it's an end-of-visit note, so anchoring it near the closing line frees the
+// description/contact area above to breathe.
+export function MeetSafelyNote() {
+  return (
+    <div className="flex max-w-md items-start gap-2">
+      <ShieldCheckIcon />
+      <p className="text-xs leading-relaxed text-moss-text">
+        Agree on a time, then meet at the campus spot above — it&apos;s fine to
+        bring a friend.
+      </p>
     </div>
   );
 }

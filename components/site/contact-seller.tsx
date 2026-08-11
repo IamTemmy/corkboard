@@ -66,7 +66,7 @@ function ExternalArrow() {
   return (
     <svg
       viewBox="0 0 24 24"
-      className="ml-auto size-4 shrink-0 text-marigold"
+      className="ml-auto size-3.5 shrink-0 text-marigold"
       fill="none"
       aria-hidden="true"
     >
@@ -89,14 +89,14 @@ function ExternalArrow() {
 function ChannelChip({ channel }: { channel: Channel }) {
   const inner = (
     <>
-      <span className="flex size-9 shrink-0 items-center justify-center rounded-lg bg-marigold/12 text-marigold">
+      <span className="flex size-8 shrink-0 items-center justify-center rounded-lg bg-marigold/12 text-marigold">
         <ChannelIcon label={channel.label} />
       </span>
-      <span className="flex flex-col">
-        <span className="text-[11px] uppercase tracking-[0.05em] text-ink/50">
+      <span className="flex flex-col leading-tight">
+        <span className="text-[10px] uppercase tracking-[0.05em] text-ink/50">
           {channel.label}
         </span>
-        <span className="max-w-[200px] truncate text-sm font-semibold text-ink">
+        <span className="max-w-[170px] truncate text-[13px] font-semibold text-ink">
           {channel.display}
         </span>
       </span>
@@ -104,8 +104,9 @@ function ChannelChip({ channel }: { channel: Channel }) {
     </>
   );
 
+  // Compact — a contact ACTION, not another information card.
   const base =
-    "flex items-center gap-3 rounded-xl border border-marigold/45 bg-paper-soft px-3.5 py-2.5";
+    "flex items-center gap-2.5 rounded-xl border border-marigold/45 bg-paper-soft px-3 py-2";
 
   return channel.href ? (
     <a
@@ -132,7 +133,7 @@ function ShieldCheckIcon() {
   return (
     <svg
       viewBox="0 0 24 24"
-      className="size-6 shrink-0 text-moss-text"
+      className="mt-0.5 size-5 shrink-0 text-moss-text"
       fill="none"
       aria-hidden="true"
     >
@@ -193,7 +194,7 @@ export function ContactSeller({
       </p>
 
       {channels.length > 0 ? (
-        <div className="flex flex-wrap gap-2.5">
+        <div className="flex flex-wrap gap-2">
           {channels.map((channel) => (
             <ChannelChip key={channel.label} channel={channel} />
           ))}
@@ -204,7 +205,10 @@ export function ContactSeller({
         </p>
       )}
 
-      <div className="mt-4 flex max-w-md items-center gap-3 rounded-[12px] border border-moss/25 bg-moss/8 px-4 py-3">
+      {/* Softened: no heavy card — just the shield + green text, so it reads as
+          a gentle reminder rather than a third boxed section competing with the
+          location and contact blocks. */}
+      <div className="mt-4 flex max-w-md items-start gap-2">
         <ShieldCheckIcon />
         <p className="text-xs leading-relaxed text-moss-text">
           Agree on a time, then meet at the campus spot above — it&apos;s fine to

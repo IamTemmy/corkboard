@@ -52,6 +52,11 @@ export default async function ListingPage({ params }: ListingPageProps) {
   // and the anon role can't read the column at the DB either (supabase/008).
   const contact = user && isAvailable ? await getListingContact(listing.id) : {};
 
+  // The owner manages their own listing, so they see an Edit action where
+  // everyone else sees Report — either way the details column ends on a
+  // bottom-anchored action so short listings never leave a dead zone.
+  const isOwner = !!user && user.id === listing.sellerId;
+
   // Suggest up to 4 other listings below. Prefer the same category, then top up
   // with other recent listings so the row never strands a lone card in an empty
   // grid — matters most now, while categories are still thin.
@@ -162,18 +167,41 @@ export default async function ListingPage({ params }: ListingPageProps) {
               </p>
             )}
 
-            {/* Report — signed-in students can flag listings that break the
-                rules (hidden on your own listing). mt-auto anchors it to the
-                bottom of the details column so, when the column is taller than
-                its content (short listings), the empty space collapses to a
-                clean gap above Report instead of dangling below it — the column
-                reads as one composition with the photo. */}
+            {/* Bottom-anchored action (mt-auto) so the details column always
+                ends level with the bottom of the photo, however short the
+                listing is — no dangling dead zone. The owner gets Edit (powder
+                blue, matching My Listings); everyone else gets Report, or a
+                sign-in nudge when signed out. */}
             <div className="mt-auto">
-              <ReportListing
-                listingId={listing.id}
-                reporterId={user?.id ?? null}
-                isOwner={!!user && user.id === listing.sellerId}
-              />
+              {isOwner ? (
+                <div className="mt-8 border-t border-line pt-6">
+                  <Link
+                    href={`/listings/${listing.id}/edit`}
+                    className="inline-flex items-center gap-1.5 text-xs font-medium text-[#3b6fa0] underline-offset-4 transition-colors hover:text-[#3b6fa0]/80 hover:underline"
+                  >
+                    <svg
+                      viewBox="0 0 24 24"
+                      className="size-3.5 shrink-0"
+                      fill="none"
+                      stroke="currentColor"
+                      strokeWidth="2"
+                      strokeLinecap="round"
+                      strokeLinejoin="round"
+                      aria-hidden="true"
+                    >
+                      <path d="M12 20h9" />
+                      <path d="M16.5 3.5a2.12 2.12 0 0 1 3 3L7 19l-4 1 1-4Z" />
+                    </svg>
+                    Edit listing
+                  </Link>
+                </div>
+              ) : (
+                <ReportListing
+                  listingId={listing.id}
+                  reporterId={user?.id ?? null}
+                  isOwner={false}
+                />
+              )}
             </div>
           </div>
         </div>

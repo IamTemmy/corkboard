@@ -96,7 +96,7 @@ export default async function ListingPage({ params }: ListingPageProps) {
               </span>
             )}
 
-            <p className="mb-2 text-xs uppercase tracking-[0.06em] text-ink/55">
+            <p className="mb-2 text-xs font-medium uppercase tracking-[0.06em] text-marigold">
               {listing.category} · {listing.condition}
             </p>
             <h1 className="font-display mb-3 text-[32px] font-semibold leading-tight tracking-[-0.01em]">
@@ -116,13 +116,25 @@ export default async function ListingPage({ params }: ListingPageProps) {
               {listing.description}
             </p>
 
-            {/* Meet-at — the on-campus exchange spot, in the pin colour */}
-            <div className="mt-6 flex items-center gap-3 rounded-[12px] border border-line bg-paper-soft px-4 py-3">
-              <span className="flex size-7 shrink-0 items-center justify-center rounded-full bg-brick">
-                <span className="size-2 rounded-full bg-paper-soft" />
-              </span>
+            {/* Meet-at — the on-campus exchange spot. Uses the universal map
+                marker (the brand's brick pin already sits on the photo, so
+                repeating it here would be redundant) + a soft moss tint, which
+                pairs it with the safety note as the "meetup & safety" colour. */}
+            <div className="mt-6 flex items-center gap-3 rounded-[12px] border border-moss/25 bg-moss/8 px-4 py-3">
+              <svg
+                viewBox="0 0 24 24"
+                className="size-7 shrink-0 text-moss-text"
+                fill="currentColor"
+                aria-hidden="true"
+              >
+                <path
+                  fillRule="evenodd"
+                  clipRule="evenodd"
+                  d="M12 22c5-5.5 7-8.9 7-12a7 7 0 1 0-14 0c0 3.1 2 6.5 7 12zm0-9.4a2.6 2.6 0 1 0 0-5.2 2.6 2.6 0 0 0 0 5.2z"
+                />
+              </svg>
               <div>
-                <p className="text-[11px] uppercase tracking-[0.06em] text-ink/55">
+                <p className="text-[11px] uppercase tracking-[0.06em] text-moss-text">
                   Meet at
                 </p>
                 <p className="text-sm font-semibold">{listing.meetupSpot}</p>
@@ -130,7 +142,9 @@ export default async function ListingPage({ params }: ListingPageProps) {
             </div>
 
             <p className="mt-4 text-xs text-ink/55">
-              Listed by {listing.seller} · {listing.campus}
+              Listed by{" "}
+              <span className="font-semibold text-ink">{listing.seller}</span> ·{" "}
+              {listing.campus}
             </p>
 
             {isAvailable ? (

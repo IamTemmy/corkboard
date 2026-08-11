@@ -126,24 +126,24 @@ function ChannelChip({ channel }: { channel: Channel }) {
 // shield + tint that reads as reassurance, distinct from the neutral copy. Moss
 // owns exactly one job on this page (safety); Meet-at keeps the brick pin, and
 // contact keeps marigold, so no colour means more than one thing.
+// Filled moss shield with a light check — a small "you're covered" badge that
+// reads clearly, rather than a thin outline that got lost against the tint.
 function ShieldCheckIcon() {
   return (
     <svg
       viewBox="0 0 24 24"
-      className="mt-px size-4 shrink-0 text-moss-text"
+      className="size-6 shrink-0 text-moss-text"
       fill="none"
       aria-hidden="true"
     >
       <path
-        d="M12 3l7 3v5c0 4.5-3 7.6-7 9-4-1.4-7-4.5-7-9V6z"
-        stroke="currentColor"
-        strokeWidth="1.8"
-        strokeLinejoin="round"
+        d="M12 2.2l7.4 3a1 1 0 0 1 .6.9v4.8c0 4.8-3.2 8.3-7.6 10a1 1 0 0 1-.8 0C7.2 19.2 4 15.7 4 10.9V6.1a1 1 0 0 1 .6-.9z"
+        fill="currentColor"
       />
       <path
-        d="m9 12 2 2 4-4"
-        stroke="currentColor"
-        strokeWidth="1.8"
+        d="m8.8 11.9 2.2 2.2 4.2-4.4"
+        stroke="#FBF8F2"
+        strokeWidth="1.9"
         strokeLinecap="round"
         strokeLinejoin="round"
       />
@@ -204,7 +204,7 @@ export function ContactSeller({
         </p>
       )}
 
-      <div className="mt-4 flex max-w-md items-start gap-2.5 rounded-[12px] border border-moss/25 bg-moss/8 px-3.5 py-3">
+      <div className="mt-4 flex max-w-md items-center gap-3 rounded-[12px] border border-moss/25 bg-moss/8 px-4 py-3">
         <ShieldCheckIcon />
         <p className="text-xs leading-relaxed text-moss-text">
           Agree on a time, then meet at the campus spot above, in daylight —

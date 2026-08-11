@@ -73,7 +73,7 @@ export function ReportListing({
   // Signed-out visitors get a nudge to sign in rather than the report action.
   if (!reporterId) {
     return (
-      <p className="mt-8 border-t border-line pt-6 text-xs text-ink/50">
+      <p className="text-xs text-ink/50">
         <Link href="/join" className="underline-offset-4 hover:underline">
           Sign in
         </Link>{" "}
@@ -113,7 +113,7 @@ export function ReportListing({
   }
 
   return (
-    <div className="mt-8 border-t border-line pt-6">
+    <div>
       {reported ? (
         <span className="inline-flex items-center gap-1.5 text-xs font-medium text-moss-text">
           <FlagIcon />

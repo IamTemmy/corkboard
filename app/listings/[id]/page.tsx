@@ -178,8 +178,17 @@ export default async function ListingPage({ params }: ListingPageProps) {
                   students on an available listing (the signed-out lock copy
                   already carries the safety line). */}
               {isAvailable && user && <MeetSafelyNote />}
-              {isOwner ? (
-                <div className="mt-8 border-t border-line pt-6">
+
+              {/* The closing line + action. When the safety note is present the
+                  line hugs it (mt-3, so it reads as one closing block); with no
+                  note it keeps a normal gap from the content above (mt-8). The
+                  owner gets Edit (powder blue); everyone else gets Report. */}
+              <div
+                className={`border-t border-line pt-6 ${
+                  isAvailable && user ? "mt-3" : "mt-8"
+                }`}
+              >
+                {isOwner ? (
                   <Link
                     href={`/listings/${listing.id}/edit`}
                     className="inline-flex items-center gap-1.5 text-xs font-medium text-[#3b6fa0] underline-offset-4 transition-colors hover:text-[#3b6fa0]/80 hover:underline"
@@ -199,14 +208,14 @@ export default async function ListingPage({ params }: ListingPageProps) {
                     </svg>
                     Edit listing
                   </Link>
-                </div>
-              ) : (
-                <ReportListing
-                  listingId={listing.id}
-                  reporterId={user?.id ?? null}
-                  isOwner={false}
-                />
-              )}
+                ) : (
+                  <ReportListing
+                    listingId={listing.id}
+                    reporterId={user?.id ?? null}
+                    isOwner={false}
+                  />
+                )}
+              </div>
             </div>
           </div>
         </div>

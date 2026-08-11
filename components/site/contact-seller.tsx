@@ -188,7 +188,7 @@ export function ContactSeller({
 
   return (
     <div className="mt-6">
-      <p className="mb-2.5 text-[11px] uppercase tracking-[0.06em] text-ink/55">
+      <p className="mb-2.5 text-[11px] uppercase tracking-[0.06em] text-moss-text">
         Reach {seller}
       </p>
 

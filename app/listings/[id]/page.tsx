@@ -4,6 +4,7 @@ import { Nav } from "@/components/site/nav";
 import { Footer } from "@/components/site/footer";
 import { ListingCard } from "@/components/site/listing-card";
 import { ListingGallery } from "@/components/site/listing-gallery";
+import { ListingDescription } from "@/components/site/listing-description";
 import { ContactSeller } from "@/components/site/contact-seller";
 import { ReportListing } from "@/components/site/report-listing";
 import { formatPostedAt, formatPrice } from "@/lib/listings";
@@ -112,9 +113,9 @@ export default async function ListingPage({ params }: ListingPageProps) {
               </span>
             </div>
 
-            <p className="text-sm leading-relaxed text-ink/70">
-              {listing.description}
-            </p>
+            {listing.description && (
+              <ListingDescription text={listing.description} />
+            )}
 
             {/* Meet-at — the on-campus exchange spot. Uses the universal map
                 marker (the brand's brick pin already sits on the photo, so
@@ -162,12 +163,18 @@ export default async function ListingPage({ params }: ListingPageProps) {
             )}
 
             {/* Report — signed-in students can flag listings that break the
-                rules (hidden on your own listing). */}
-            <ReportListing
-              listingId={listing.id}
-              reporterId={user?.id ?? null}
-              isOwner={!!user && user.id === listing.sellerId}
-            />
+                rules (hidden on your own listing). mt-auto anchors it to the
+                bottom of the details column so, when the column is taller than
+                its content (short listings), the empty space collapses to a
+                clean gap above Report instead of dangling below it — the column
+                reads as one composition with the photo. */}
+            <div className="mt-auto">
+              <ReportListing
+                listingId={listing.id}
+                reporterId={user?.id ?? null}
+                isOwner={!!user && user.id === listing.sellerId}
+              />
+            </div>
           </div>
         </div>
 

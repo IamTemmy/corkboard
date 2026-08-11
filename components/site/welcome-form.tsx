@@ -3,6 +3,7 @@
 import { useState } from "react";
 import { useRouter } from "next/navigation";
 import { createClient } from "@/lib/supabase/client";
+import { validateDisplayName } from "@/lib/display-name";
 import { Button } from "@/components/ui/button";
 
 // Shown once, right after a student first verifies. Lets them choose how they
@@ -60,7 +61,13 @@ export function WelcomeForm({
       <form
         onSubmit={(e) => {
           e.preventDefault();
-          if (trimmed) save(trimmed);
+          if (!trimmed) return;
+          const nameError = validateDisplayName(trimmed);
+          if (nameError) {
+            setError(nameError);
+            return;
+          }
+          save(trimmed);
         }}
         className="flex flex-col gap-4"
       >

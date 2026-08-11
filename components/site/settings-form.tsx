@@ -4,6 +4,7 @@ import { useState } from "react";
 import { useRouter } from "next/navigation";
 import { createClient } from "@/lib/supabase/client";
 import { isValidGroupme } from "@/lib/contact";
+import { validateDisplayName } from "@/lib/display-name";
 import { syncSellerListings } from "@/lib/sync-listings";
 import { Button } from "@/components/ui/button";
 
@@ -46,6 +47,12 @@ export function SettingsForm({
   async function onSubmit(e: React.FormEvent) {
     e.preventDefault();
     setError(null);
+
+    const nameError = validateDisplayName(displayName);
+    if (nameError) {
+      setError(nameError);
+      return;
+    }
 
     if (!isValidGroupme(groupme)) {
       setError("Enter a valid GroupMe link (groupme.com/…) or leave it blank.");

@@ -98,6 +98,25 @@ less confusing than one that suddenly 404s, and it leaves room for future
 social-proof ("recently sold"). We deliberately chose this over making sold
 listings seller-only/404 for the public.
 
+## Security Assessment v1
+
+*(Added 2026-08-10, pre-beta. A deliberate pen-test-style pass: live black-box probes against production + a full source trust-boundary audit, run outside-in rather than the usual inside-out.)*
+
+**Verdict:** no Critical and no active High. The "database is the authority" model holds from both directions — anonymous probes against the live REST API confirmed contact-column privacy, profile/domain-table lockdown, and the gated contact RPC all deny as designed; the source audit confirmed the trusted-field trigger, per-user Storage isolation, reports rules, and a closed XSS surface. Dependencies clean (`npm audit` 0), no secrets in git history.
+
+**Shipped from this pass:**
+- **Baseline security headers** (`next.config.ts`): X-Frame-Options, X-Content-Type-Options, Referrer-Policy, Permissions-Policy, and `poweredByHeader:false`. Defense-in-depth; the DB remains the real boundary. HSTS is already applied by Vercel.
+- **H1 — versioned the `listings` base table** (`000-listings-base.sql`). The table, its RLS-enabled state, the public SELECT policy, and the `status` CHECK predated version control and lived only in the live DB. Now idempotently captured so the security model is provable and DR-safe from source.
+
+**Deliberately deferred (with reasons), NOT before the controlled beta:**
+- **Content-Security-Policy** — high-value XSS backstop, but a wrong CSP can blank the app (Next hydration uses inline scripts). Do it *before public launch*, not before the small controlled beta, and roll out via `Content-Security-Policy-Report-Only` first. The XSS surface is already confirmed closed, so this is a backstop, not a plugged hole.
+- **`images[]` external-URL constraint** — a direct-API caller can point images at an external host (IP-leak/hotlink; can't execute script). Keep with the larger "store Storage *paths*, build URLs server-side" refactor. Post-beta.
+- **Email-change domain gate** — `updateUser({email})` can move a *verified* account's login email off-`.edu`. No UI exposes it and campus/user_type persist from signup, so it's not an access bypass. If an email-change UI is ever added, gate it with a before-email-change hook. Documented, no code change now.
+- **`status`/`sold_at` consistency CHECK (L3)** — cosmetic; deferred until after demo-data cleanup (one existing sold row has a null `sold_at`), where it becomes a clean no-op.
+- **Rate-limiting contact-harvest / OTP / uploads** — a verified student can script the contact RPC across enumerable listing IDs. By-design payoff of verification; watch for abuse in beta rather than pre-building limits. Abuse-volume testing was intentionally NOT run against production.
+
+**Still owed (needs real accounts):** the two-signed-in-student tests (cross-user Storage-image delete, report-own, report dedup) remain verification tasks blocked on Resend — the authenticated attacker matrix is otherwise covered by the SQL role-simulation in `supabase/tests/authz-check.sql`.
+
 ## Success definition for this build
 
 Finishing and launching, not maximizing features. A polished, deployed MVP with a handful of real users beats an ambitious unfinished product — especially since this is the first site built solo.

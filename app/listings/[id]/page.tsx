@@ -96,7 +96,7 @@ export default async function ListingPage({ params }: ListingPageProps) {
               </span>
             )}
 
-            <p className="mb-2 text-xs font-medium uppercase tracking-[0.06em] text-marigold">
+            <p className="mb-2 text-xs font-semibold uppercase tracking-[0.06em] text-marigold-text">
               {listing.category} · {listing.condition}
             </p>
             <h1 className="font-display mb-3 text-[32px] font-semibold leading-tight tracking-[-0.01em]">

@@ -71,7 +71,7 @@ export const COMMUNITY_RULES: ProhibitedItem[] = [
   {
     title: "Meet safely on campus",
     detail:
-      "Exchanges happen at the campus spot on the listing, in daylight. It's fine to bring a friend.",
+      "Exchanges happen at the campus spot on the listing. It's fine to bring a friend.",
   },
   {
     title: "It's cash in person, no shipping",

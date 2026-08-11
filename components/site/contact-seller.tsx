@@ -176,8 +176,8 @@ export function ContactSeller({
         <p className="mt-3 max-w-md text-xs text-ink/55">
           Corkboard only shows a seller&apos;s contact details to verified
           students. Sign in with your school email to reach {seller} and agree on
-          a time — then meet at the campus spot above, in daylight. It&apos;s fine
-          to bring a friend.
+          a time — then meet at the campus spot above. It&apos;s fine to bring a
+          friend.
         </p>
       </div>
     );
@@ -207,8 +207,8 @@ export function ContactSeller({
       <div className="mt-4 flex max-w-md items-center gap-3 rounded-[12px] border border-moss/25 bg-moss/8 px-4 py-3">
         <ShieldCheckIcon />
         <p className="text-xs leading-relaxed text-moss-text">
-          Agree on a time, then meet at the campus spot above, in daylight —
-          it&apos;s fine to bring a friend.
+          Agree on a time, then meet at the campus spot above — it&apos;s fine to
+          bring a friend.
         </p>
       </div>
     </div>

@@ -61,12 +61,35 @@ function ChannelIcon({ label }: { label: string }) {
   );
 }
 
+// A little ↗ marking a chip as opening an external app (Instagram / GroupMe).
+function ExternalArrow() {
+  return (
+    <svg
+      viewBox="0 0 24 24"
+      className="ml-auto size-4 shrink-0 text-marigold"
+      fill="none"
+      aria-hidden="true"
+    >
+      <path
+        d="M8 16 16 8M9 8h7v7"
+        stroke="currentColor"
+        strokeWidth="2"
+        strokeLinecap="round"
+        strokeLinejoin="round"
+      />
+    </svg>
+  );
+}
+
 // A single contact channel rendered as a bordered chip (link when we have a
-// safe URL, plain card otherwise).
+// safe URL, plain card otherwise). Contact is the primary action on the page,
+// so the chip wears the marigold accent — border + icon + the ↗ open-in-app
+// arrow — to stand out from the description. The value itself stays high-
+// contrast ink (a marigold value would fail AA on the paper background).
 function ChannelChip({ channel }: { channel: Channel }) {
   const inner = (
     <>
-      <span className="flex size-9 shrink-0 items-center justify-center rounded-lg bg-paper text-ink/70">
+      <span className="flex size-9 shrink-0 items-center justify-center rounded-lg bg-marigold/12 text-marigold">
         <ChannelIcon label={channel.label} />
       </span>
       <span className="flex flex-col">
@@ -77,11 +100,12 @@ function ChannelChip({ channel }: { channel: Channel }) {
           {channel.display}
         </span>
       </span>
+      {channel.external && <ExternalArrow />}
     </>
   );
 
   const base =
-    "flex items-center gap-3 rounded-xl border border-line bg-paper-soft px-3.5 py-2.5";
+    "flex items-center gap-3 rounded-xl border border-marigold/45 bg-paper-soft px-3.5 py-2.5";
 
   return channel.href ? (
     <a
@@ -89,12 +113,41 @@ function ChannelChip({ channel }: { channel: Channel }) {
       {...(channel.external
         ? { target: "_blank", rel: "noopener noreferrer" }
         : {})}
-      className={cn(base, "transition-colors hover:border-ink/30 hover:bg-paper")}
+      className={cn(base, "transition-colors hover:border-marigold hover:bg-marigold/10")}
     >
       {inner}
     </a>
   ) : (
     <div className={base}>{inner}</div>
+  );
+}
+
+// The safety reminder gets a calm moss "you're good" treatment — a subtle
+// shield + tint that reads as reassurance, distinct from the neutral copy. Moss
+// owns exactly one job on this page (safety); Meet-at keeps the brick pin, and
+// contact keeps marigold, so no colour means more than one thing.
+function ShieldCheckIcon() {
+  return (
+    <svg
+      viewBox="0 0 24 24"
+      className="mt-px size-4 shrink-0 text-moss-text"
+      fill="none"
+      aria-hidden="true"
+    >
+      <path
+        d="M12 3l7 3v5c0 4.5-3 7.6-7 9-4-1.4-7-4.5-7-9V6z"
+        stroke="currentColor"
+        strokeWidth="1.8"
+        strokeLinejoin="round"
+      />
+      <path
+        d="m9 12 2 2 4-4"
+        stroke="currentColor"
+        strokeWidth="1.8"
+        strokeLinecap="round"
+        strokeLinejoin="round"
+      />
+    </svg>
   );
 }
 
@@ -151,10 +204,13 @@ export function ContactSeller({
         </p>
       )}
 
-      <p className="mt-3 max-w-md text-xs text-ink/55">
-        Agree on a time, then meet at the campus spot above, in daylight — it&apos;s
-        fine to bring a friend.
-      </p>
+      <div className="mt-4 flex max-w-md items-start gap-2.5 rounded-[12px] border border-moss/25 bg-moss/8 px-3.5 py-3">
+        <ShieldCheckIcon />
+        <p className="text-xs leading-relaxed text-moss-text">
+          Agree on a time, then meet at the campus spot above, in daylight —
+          it&apos;s fine to bring a friend.
+        </p>
+      </div>
     </div>
   );
 }

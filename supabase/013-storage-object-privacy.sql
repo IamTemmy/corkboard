@@ -1,0 +1,24 @@
+-- ============================================================================
+-- 013 — Remove ANONYMOUS Storage object enumeration.
+-- Run in the Supabase SQL editor. Idempotent.
+--
+-- WHY: migration 004 gave the `public` role a blanket SELECT on every
+-- storage.objects row in the listing-images bucket. For a PUBLIC bucket that
+-- policy is NOT needed to SERVE images — public object URLs
+-- (/storage/v1/object/public/…) are served without it. But it DOES let an
+-- anonymous caller LIST the bucket through the Storage API: enumerating
+-- per-user folder names (which are account UUIDs), object names, and
+-- timestamps — including images orphaned from deleted listings. That's a
+-- privacy/scraping surface with no product benefit.
+--
+-- The app never calls storage `.list()`. It only uploads, removes files in the
+-- caller's OWN folder, and builds public URLs client-side (getPublicUrl). So
+-- this SELECT permission is pure attack surface.
+--
+-- FIX: drop the public object-metadata SELECT policy. Public image URLs keep
+-- working (public bucket). Owners keep INSERT/UPDATE/DELETE on their own folder
+-- (those policies are unchanged). After running, verify images still load on
+-- the board, a listing page, and My Listings.
+-- ============================================================================
+
+drop policy if exists "listing images are readable" on storage.objects;

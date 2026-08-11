@@ -7,6 +7,12 @@ on:
     branches: [main]
   pull_request:
 
+# Least privilege: these jobs only read the repo, so drop the default broad
+# GITHUB_TOKEN scope down to read-only. (upload-artifact uses the API, not this
+# token's write scope.)
+permissions:
+  contents: read
+
 jobs:
   build:
     name: Lint & build

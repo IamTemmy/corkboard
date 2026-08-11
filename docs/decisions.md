@@ -117,6 +117,23 @@ listings seller-only/404 for the public.
 
 **Still owed (needs real accounts):** the two-signed-in-student tests (cross-user Storage-image delete, report-own, report dedup) remain verification tasks blocked on Resend — the authenticated attacker matrix is otherwise covered by the SQL role-simulation in `supabase/tests/authz-check.sql`.
 
+## Security Assessment v1 — independent second review
+
+*(Added 2026-08-11. A separate reviewer re-checked the app asking different questions — object enumeration, migration-replay regressions, whether the "trusted" source value is itself trustworthy, and dropped auth-middleware metadata. Every finding was verified against the actual code/library before acting; none were Critical or High. This is the "two-factor" cross-check working — it found real gaps the first, inside-out pass missed.)*
+
+**Fixed before beta:**
+- **Display-name impersonation (Med).** A student could set their name to "Campus Police" / "JSU Housing" — the listing-`seller` trigger faithfully copies a *user-controlled* profile name. Now blocked client-side (`lib/display-name.ts`, used by `/welcome` + Settings) **and** at the DB (`014` profiles trigger — the real authority, since the client is bypassable). Reinforces the standing rule: verification proves a campus *email*, not identity or endorsement.
+- **Anonymous Storage enumeration (Low–Med).** `004`'s `to public` SELECT on `storage.objects` let anyone *list* the bucket (per-user folders = account UUIDs, object names, orphaned images) via the Storage API — not needed to serve a public bucket. Dropped (`013`); public image URLs still work; the app never calls `.list()`.
+- **SSR cache-header propagation (Low, Vercel-mitigated).** `proxy.ts` now copies the `Cache-Control`/`Expires`/`Pragma` headers `@supabase/ssr` passes when it refreshes session cookies (verified in the vendored library types), instead of relying on Vercel not caching `Set-Cookie` responses.
+- **Profile field bounds + INSERT (Low).** The DB now enforces `display_name`/`instagram`/`groupme` length (`014` trigger) and revokes client `INSERT` on `profiles` — the signup trigger (SECURITY DEFINER) owns profile creation.
+- **Relist UX (Low).** Relisting after clearing all contacts now shows "add a contact method" instead of a generic error.
+- **Forward-only migrations (Low).** README no longer implies an *old* migration can be replayed against a fully-migrated DB (re-running `008` would regress `010`'s contact lockdown). Rebuild = run the whole set in order.
+- **CI least-privilege (Info).** Workflow token scoped to `contents: read`.
+
+**Deferred (documented, not beta blockers):**
+- **Sold listings are bulk-queryable with a stable `seller_id` (Low).** The public read policy is `USING(true)` and anon can read `seller_id`/`status`/`sold_at`, so a direct API call can reconstruct a seller's sold history even after a display-name change — broader than the "direct link stays reachable" intent. Clean fix needs a narrower read surface (view/RPC) or dropping `seller_id` from the anon grant; bundle with the post-beta "store Storage *paths*, not full URLs" refactor (which also removes the external-`images[]` URL risk).
+- **CI Action SHA-pinning + Dependabot** — supply-chain hardening beyond the token-scope fix.
+
 ## Success definition for this build
 
 Finishing and launching, not maximizing features. A polished, deployed MVP with a handful of real users beats an ambitious unfinished product — especially since this is the first site built solo.

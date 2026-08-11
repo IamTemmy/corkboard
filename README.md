@@ -65,10 +65,17 @@ must not be committed.
 The database, auth, and storage are configured in `supabase/`:
 
 - Run the SQL files in the Supabase SQL editor **in ascending filename order**:
-  `auth-and-profiles.sql` first, then **every** numbered migration (`002-…`,
-  `003-…`, and so on to the end). Each is re-runnable. Several of the later ones
-  are security migrations (contact privacy, authorization hardening) — run them
-  all, don't stop early.
+  `000-listings-base.sql` first, then `auth-and-profiles.sql`, then **every**
+  numbered migration (`002-…`, `003-…`, up to the highest). Several of the later
+  ones are security migrations (contact privacy, authorization hardening) — run
+  them all, don't stop early.
+- The migrations are **forward-only**. Applied in order on a fresh database they
+  produce the correct final state, and each file is safe to re-run *in place*.
+  But do **not** replay an *older* migration against an already-fully-migrated
+  database: a few later files deliberately tighten privileges an earlier one
+  granted (e.g. re-running `008` would re-open the direct contact-column access
+  that `010` locked down). To rebuild, run the whole set in order — never an old
+  one on its own.
 - Complete the dashboard-only steps (SMTP for the OTP email, OTP length, the
   auth hook wiring) documented in [`supabase/DASHBOARD-SETUP.md`](supabase/DASHBOARD-SETUP.md).
 

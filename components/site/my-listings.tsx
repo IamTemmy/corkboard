@@ -133,8 +133,17 @@ export function MyListings({ listings }: { listings: Listing[] }) {
     const { error } = await supabase.from("listings").update(patch).eq("id", id);
     setBusyId(null);
     if (error) {
-      // Don't leave the click looking like it did nothing.
-      setActionError("Couldn't update the listing — check your connection and try again.");
+      // Putting an item back on the board (relist / un-reserve) when the seller
+      // has cleared all their contact methods trips the DB rule "an available
+      // listing must have a contact" (a check constraint). Point them at the
+      // real fix instead of a misleading connection error.
+      const missingContact =
+        error.code === "23514" && /available_has_contact/i.test(error.message ?? "");
+      setActionError(
+        missingContact
+          ? "Add a contact method (Instagram or GroupMe) in Settings before putting this back on the board."
+          : "Couldn't update the listing — check your connection and try again.",
+      );
       return;
     }
     router.refresh();

@@ -7,7 +7,14 @@ export default defineConfig({
   testDir: "./tests",
   fullyParallel: true,
   forbidOnly: !!process.env.CI,
-  retries: process.env.CI ? 1 : 0,
+  retries: process.env.CI ? 2 : 0,
+  // The "content behavior" tests read live (free-tier) Supabase. From CI runners
+  // a burst of parallel page loads can hit transient backend latency and time a
+  // few assertions out (seen once as a flaky "some jobs were not successful"
+  // while the identical code passed the commit before). Run serially in CI to go
+  // easy on the backend, and give assertions more than the 5s default headroom.
+  workers: process.env.CI ? 1 : undefined,
+  expect: { timeout: 10_000 },
   // In CI also emit an HTML report so a failed run uploads something viewable.
   reporter: process.env.CI
     ? [["github"], ["html", { open: "never" }]]

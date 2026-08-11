@@ -18,7 +18,7 @@ export async function proxy(request: NextRequest) {
         getAll() {
           return request.cookies.getAll();
         },
-        setAll(cookiesToSet) {
+        setAll(cookiesToSet, headers) {
           // Update the request (so downstream sees the new cookies)...
           for (const { name, value } of cookiesToSet) {
             request.cookies.set(name, value);
@@ -27,6 +27,17 @@ export async function proxy(request: NextRequest) {
           response = NextResponse.next({ request });
           for (const { name, value, options } of cookiesToSet) {
             response.cookies.set(name, value, options);
+          }
+          // @supabase/ssr (>=0.10) hands us cache-protection headers whenever it
+          // sets auth cookies (Cache-Control: no-store, Expires: 0, Pragma:
+          // no-cache). Copy them onto the response so no CDN/proxy can cache a
+          // reply carrying a refreshed session token and serve it to someone
+          // else. (Vercel's CDN already won't cache Set-Cookie responses — this
+          // matches Supabase's contract instead of relying on that.)
+          if (headers) {
+            for (const [key, value] of Object.entries(headers)) {
+              response.headers.set(key, value);
+            }
           }
         },
       },

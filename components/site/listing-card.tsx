@@ -52,16 +52,32 @@ export function ListingCard({ listing }: { listing: Listing }) {
           <h3 className="mb-1 line-clamp-2 min-h-[2.75rem] text-[15px] font-semibold leading-snug">
             {listing.title}
           </h3>
-          <p className="mb-2.5 text-xs text-ink/55">
+          <p className="mb-2.5 text-xs font-semibold uppercase tracking-[0.06em] text-marigold-text">
             {listing.category} · {listing.condition}
           </p>
-          <div className="flex items-center justify-between">
+          <div className="flex items-center justify-between gap-2">
             {/* Price in IBM Plex Mono — reads like a price tag / receipt */}
             <span className="font-mono text-[15px] font-medium">
               {formatPrice(listing.price)}
             </span>
-            {/* Meetup spot — reinforces the on-campus identity */}
-            <span className="text-[11px] text-ink/50">{listing.meetupSpot}</span>
+            {/* Meetup spot — the green pin echoes the detail page's Meet-at, so
+                the card and its detail page share the "green = campus meeting"
+                colour. */}
+            <span className="flex min-w-0 items-center gap-1 text-[11px] font-medium text-moss-text">
+              <svg
+                viewBox="0 0 24 24"
+                className="size-3 shrink-0"
+                fill="currentColor"
+                aria-hidden="true"
+              >
+                <path
+                  fillRule="evenodd"
+                  clipRule="evenodd"
+                  d="M12 22c5-5.5 7-8.9 7-12a7 7 0 1 0-14 0c0 3.1 2 6.5 7 12zm0-9.4a2.6 2.6 0 1 0 0-5.2 2.6 2.6 0 0 0 0 5.2z"
+                />
+              </svg>
+              <span className="truncate">{listing.meetupSpot}</span>
+            </span>
           </div>
         </div>
       </article>

@@ -6,8 +6,10 @@ import { ListingCard } from "./listing-card";
 export function ListingGrid({ listings }: { listings: Listing[] }) {
   return (
     <section id="listings" className="scroll-mt-4">
-      <h2 className="px-6 pb-4 pt-10 text-[13px] font-semibold uppercase tracking-[0.06em] text-ink/55 sm:px-12">
-        Fresh listings
+      <h2 className="px-6 pb-4 pt-10 sm:px-12">
+        <span className="inline-block border-b-2 border-ink pb-1.5 text-[13px] font-semibold uppercase tracking-[0.06em] text-ink">
+          Fresh listings
+        </span>
       </h2>
 
       {listings.length === 0 ? (

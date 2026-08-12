@@ -118,16 +118,22 @@ export default async function ListingPage({ params }: ListingPageProps) {
               </span>
             </div>
 
-            {listing.description && (
-              <ListingDescription text={listing.description} />
-            )}
+            {/* Description sits in a flexible middle band that centres it
+                vertically. On a sparse listing (short text beside a tall
+                multi-photo gallery) it floats to the middle of the free space
+                instead of clinging to the price with a void beneath it; a
+                long/clamped description simply fills the band. */}
+            <div className="flex flex-1 flex-col justify-center">
+              {listing.description && (
+                <ListingDescription text={listing.description} />
+              )}
+            </div>
 
             {/* Section 3 — the transaction block (meet spot · seller · contact ·
-                safety · action). Anchored to the bottom as ONE unit (mt-auto),
-                so the flexible space falls between the description and this block
-                instead of inside it. These parts are fixed-height; the variable
-                description gets the breathing room above. */}
-            <div className="mt-auto flex flex-col">
+                safety · action). Sits at the bottom; the flexible description
+                band above pushes it down for a clean anchor regardless of
+                description length. */}
+            <div className="mt-6 flex flex-col">
               {/* Meet-at — the universal map marker (the brand's brick pin is
                   already on the photo) in a soft moss box. */}
               <div className="flex items-center gap-3 rounded-[12px] border border-moss/25 bg-moss/8 px-4 py-3">

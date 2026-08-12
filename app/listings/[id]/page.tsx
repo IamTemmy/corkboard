@@ -122,11 +122,15 @@ export default async function ListingPage({ params }: ListingPageProps) {
               <ListingDescription text={listing.description} />
             )}
 
-            {/* Meet-at — the on-campus exchange spot. Uses the universal map
-                marker (the brand's brick pin already sits on the photo, so
-                repeating it here would be redundant) + a soft moss tint, which
-                pairs it with the safety note as the "meetup & safety" colour. */}
-            <div className="mt-6 flex items-center gap-3 rounded-[12px] border border-moss/25 bg-moss/8 px-4 py-3">
+            {/* Section 3 — the transaction block (meet spot · seller · contact ·
+                safety · action). Anchored to the bottom as ONE unit (mt-auto),
+                so the flexible space falls between the description and this block
+                instead of inside it. These parts are fixed-height; the variable
+                description gets the breathing room above. */}
+            <div className="mt-auto flex flex-col">
+              {/* Meet-at — the universal map marker (the brand's brick pin is
+                  already on the photo) in a soft moss box. */}
+              <div className="flex items-center gap-3 rounded-[12px] border border-moss/25 bg-moss/8 px-4 py-3">
               <svg
                 viewBox="0 0 24 24"
                 className="size-7 shrink-0 text-moss-text"
@@ -167,22 +171,18 @@ export default async function ListingPage({ params }: ListingPageProps) {
               </p>
             )}
 
-            {/* Bottom-anchored action (mt-auto) so the details column always
-                ends level with the bottom of the photo, however short the
-                listing is — no dangling dead zone. The owner gets Edit (powder
-                blue, matching My Listings); everyone else gets Report, or a
-                sign-in nudge when signed out. */}
-            <div className="mt-auto">
-              {/* Meet-safely note sits with the closing actions, not under the
-                  contact chips — an end-of-visit reminder. Shown to signed-in
-                  students on an available listing (the signed-out lock copy
+              {/* Meet-safely note — an end-of-visit reminder just above the
+                  closing line (signed-in + available; the signed-out lock copy
                   already carries the safety line). */}
-              {isAvailable && user && <MeetSafelyNote />}
+              {isAvailable && user && (
+                <div className="mt-6">
+                  <MeetSafelyNote />
+                </div>
+              )}
 
-              {/* The closing line + action. When the safety note is present the
-                  line hugs it (mt-3, so it reads as one closing block); with no
-                  note it keeps a normal gap from the content above (mt-8). The
-                  owner gets Edit (powder blue); everyone else gets Report. */}
+              {/* Closing line + action. The line hugs the safety note when it's
+                  present (mt-3 → one closing block); otherwise a normal gap
+                  (mt-8). Owner gets Edit (powder blue); everyone else Report. */}
               <div
                 className={`border-t border-line pt-6 ${
                   isAvailable && user ? "mt-3" : "mt-8"

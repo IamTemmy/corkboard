@@ -140,10 +140,12 @@ listings seller-only/404 for the public.
 
 **Three-section right column.** The details column beside the photo is organised as:
 1. **Header** — category · condition, title, price · posted date.
-2. **Description** — *variable* height; clamped to 3 lines with an in-place "More" toggle (`ListingDescription`) so a long description expands on demand instead of dictating the page height.
-3. **Transaction block** — meet-at, listed-by, contact ("Reach"), safety note, and the closing action. This block is fixed-height and anchored to the bottom of the column as **one unit** (`mt-auto`), so the flexible whitespace lands *between* the description and the block, never inside it.
+2. **Description** — *variable* height; clamped to 3 lines with an in-place "More" toggle (`ListingDescription`). It sits in a `flex-1` band that **centres it vertically**, so on a sparse listing (short text beside a tall multi-photo gallery) it floats to the middle of the free space rather than clinging to the price with a void beneath. A long/clamped description just fills the band (centring has no effect).
+3. **Transaction block** — meet-at, listed-by, contact ("Reach"), safety note, and the closing action. Fixed-height, sitting at the **bottom** of the column (the `flex-1` description band above pushes it down), so it anchors the column cleanly regardless of description length.
 
-The result: the column always reads as one composition with the photo — content at the top, a breathing gap, logistics + action anchored at the bottom — regardless of how much the seller wrote. On mobile the grid collapses and everything flows naturally (no equal-height logic).
+The result: the column always reads as one composition with the photo — item identity up top, the description floating in the balanced middle, logistics + action anchored at the bottom — regardless of how much the seller wrote. On mobile the grid collapses and everything flows naturally (no equal-height logic).
+
+**Why centre the description rather than relocate the gap:** a tall portrait photo next to short info means empty space *must* exist on sparse listings — no arrangement removes it, only reshapes it (we tried the gap below the content, above the transaction block, and between contact and safety; each was rejected in turn). Centring the short description distributes that whitespace evenly around the one variable element, which read as the most balanced across real listings. The description box / internal-scroll idea was rejected: it reintroduces the card clutter this pass removed, internal scroll is a mobile/trackpad annoyance, and most descriptions are 1–2 lines so the box would sit mostly empty — the clamp already handles long text.
 
 **Bottom-anchored closing action** (ends level with the bottom of the photo):
 - Owner viewing their own listing → **Edit listing** (powder blue, matching My Listings).

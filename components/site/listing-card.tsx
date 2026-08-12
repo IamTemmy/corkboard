@@ -52,7 +52,10 @@ export function ListingCard({ listing }: { listing: Listing }) {
           <h3 className="mb-1 line-clamp-2 min-h-[2.75rem] text-[15px] font-semibold leading-snug">
             {listing.title}
           </h3>
-          <p className="mb-2.5 text-xs font-semibold uppercase tracking-[0.06em] text-marigold-text">
+          {/* One line, always — truncate keeps every card the same height even
+              when the category+condition is long (uppercase made the longest
+              ones wrap and grow the card). */}
+          <p className="mb-2.5 truncate text-[10px] font-semibold uppercase tracking-[0.03em] text-marigold-text">
             {listing.category} · {listing.condition}
           </p>
           <div className="flex items-center justify-between gap-2">

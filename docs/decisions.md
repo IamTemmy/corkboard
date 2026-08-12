@@ -134,6 +134,39 @@ listings seller-only/404 for the public.
 - **Sold listings are bulk-queryable with a stable `seller_id` (Low).** The public read policy is `USING(true)` and anon can read `seller_id`/`status`/`sold_at`, so a direct API call can reconstruct a seller's sold history even after a display-name change — broader than the "direct link stays reachable" intent. Clean fix needs a narrower read surface (view/RPC) or dropping `seller_id` from the anon grant; bundle with the post-beta "store Storage *paths*, not full URLs" refactor (which also removes the external-`images[]` URL risk).
 - **CI Action SHA-pinning + Dependabot** — supply-chain hardening beyond the token-scope fix.
 
+## Listing detail page — layout & colour system
+
+*(Added 2026-08-11, after a focused design pass on the listing-detail page — Corkboard's most important screen, where browsing turns into contacting another student. It should be the most polished page in the product.)*
+
+**Three-section right column.** The details column beside the photo is organised as:
+1. **Header** — category · condition, title, price · posted date.
+2. **Description** — *variable* height; clamped to 3 lines with an in-place "More" toggle (`ListingDescription`) so a long description expands on demand instead of dictating the page height.
+3. **Transaction block** — meet-at, listed-by, contact ("Reach"), safety note, and the closing action. This block is fixed-height and anchored to the bottom of the column as **one unit** (`mt-auto`), so the flexible whitespace lands *between* the description and the block, never inside it.
+
+The result: the column always reads as one composition with the photo — content at the top, a breathing gap, logistics + action anchored at the bottom — regardless of how much the seller wrote. On mobile the grid collapses and everything flows naturally (no equal-height logic).
+
+**Bottom-anchored closing action** (ends level with the bottom of the photo):
+- Owner viewing their own listing → **Edit listing** (powder blue, matching My Listings).
+- Any other signed-in student → **Report listing** (rust).
+- Signed out → "Sign in to report" nudge.
+
+Every listing therefore ends on an action with no dead zone, whoever's looking. (The anchor first relied on Report, which is hidden on your *own* listing — leaving the owner's own view empty; the Edit action closes that gap.)
+
+**Meet-safely note** sits just above the closing line (not under the contact chips) as an end-of-visit reminder — a light shield + moss text, no heavy box, hugging the divider so note + line + action read as one closing block.
+
+**Semantic colour system** — each colour owns exactly one job (replaces ad-hoc colouring):
+- **Gold / marigold** → item metadata (category · condition) + the contact *action* (Instagram/GroupMe chips + the open-in-app ↗). Small text uses the darker `--color-marigold-text` for contrast on paper.
+- **Green / moss** → campus meeting + trust + seller reach (meet-at box, "Reach <name>" label, safety note). Small text uses `--color-moss-text` (AA on paper).
+- **Rust / brick** → report / caution — and the signature card pin.
+- **Navy / ink** → primary content (title, price, values).
+- **Gray** → secondary / meta (posted date, "Listed by", hints).
+
+**Meet-at marker:** a green *location* pin, not the brand's brick pin — the brick pin already appears on the product photo, so repeating it on Meet-at was redundant; the map marker reads correctly for a meetup spot.
+
+**Both contact channels allowed:** a seller may list Instagram *and* GroupMe (the rule is "at least one" on an available listing, not "exactly one"), so the contact block handles 1–2 compact chips.
+
+**Deferred:** gallery height normalization across listings with different photo counts — single-image listings already correctly drop the arrows/counter/thumbnails, so cross-listing height consistency is low-value polish.
+
 ## Success definition for this build
 
 Finishing and launching, not maximizing features. A polished, deployed MVP with a handful of real users beats an ambitious unfinished product — especially since this is the first site built solo.

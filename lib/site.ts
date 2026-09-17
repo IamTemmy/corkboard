@@ -3,4 +3,4 @@
 // back to the current production URL, so the app still builds and generates
 // correct links with no env setup required.
 export const siteUrl =
-  process.env.NEXT_PUBLIC_SITE_URL ?? "https://corkboard-six.vercel.app";
+  process.env.NEXT_PUBLIC_SITE_URL ?? "https://snaggboard.com";

@@ -7,7 +7,7 @@ hand something over. Built first for Jackson State University (JSU).
 > Snaggboard is an independent student project — not operated or endorsed by any
 > university.
 
-**Live:** https://corkboard-six.vercel.app
+**Live:** https://snaggboard.com
 
 ## How it works
 

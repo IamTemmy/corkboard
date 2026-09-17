@@ -64,7 +64,7 @@ export async function Nav() {
           <circle cx="16" cy="16" r="2.4" fill="#FBF8F2" />
         </svg>
         <span>
-          snagg<span className="text-marigold">board</span>
+          Snagg<span className="text-marigold">board</span>
         </span>
       </a>
 

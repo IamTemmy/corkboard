@@ -48,7 +48,7 @@ export default function OpengraphImage() {
 
         {/* Wordmark */}
         <div style={{ display: "flex", fontSize: 92, fontWeight: 700, letterSpacing: "-2px" }}>
-          <span style={{ color: "#1C2430" }}>snagg</span>
+          <span style={{ color: "#1C2430" }}>Snagg</span>
           <span style={{ color: "#E7A93B" }}>board</span>
         </div>
 

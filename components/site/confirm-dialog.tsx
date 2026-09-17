@@ -3,7 +3,7 @@
 import { type ReactNode } from "react";
 import { Modal } from "./modal";
 
-// A Corkboard-styled confirmation dialog — replaces the browser-native
+// A Snaggboard-styled confirmation dialog — replaces the browser-native
 // window.confirm(). Generic on purpose: pass a title, body, and labels, and
 // flag `destructive` for the restrained-brick confirm button. Built on the
 // shared Modal shell (backdrop, focus trap, Escape, scroll lock).

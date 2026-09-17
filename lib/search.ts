@@ -1,7 +1,7 @@
 import type { Listing } from "./listings";
 
 // Client-side search for the marketplace board. Deliberately simple and
-// dependency-free — good for a single campus's worth of listings. If Corkboard
+// dependency-free — good for a single campus's worth of listings. If Snaggboard
 // ever reaches a scale where this strains (tens of thousands of listings across
 // many schools), replace it with Postgres full-text search behind getListings();
 // the call site (searchListings) stays the same.

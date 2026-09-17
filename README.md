@@ -1,10 +1,10 @@
-# Corkboard
+# Snaggboard
 
 A campus marketplace where **verified students buy and sell in person**. No
 shipping, no fees, no middleman — just students meeting at a spot on campus to
 hand something over. Built first for Jackson State University (JSU).
 
-> Corkboard is an independent student project — not operated or endorsed by any
+> Snaggboard is an independent student project — not operated or endorsed by any
 > university.
 
 **Live:** https://corkboard-six.vercel.app

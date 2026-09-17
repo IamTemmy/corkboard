@@ -10,7 +10,7 @@ const inter = Inter({
   weight: ["400", "500", "600", "700"],
 });
 
-// Display — headings and the "corkboard" wordmark. Gives the brand its character.
+// Display — headings and the "snaggboard" wordmark. Gives the brand its character.
 const fraunces = Fraunces({
   variable: "--font-fraunces",
   subsets: ["latin"],
@@ -24,7 +24,7 @@ const ibmPlexMono = IBM_Plex_Mono({
   weight: ["500"],
 });
 
-const siteTitle = "Corkboard — Buy and sell with people on your campus";
+const siteTitle = "Snaggboard — Buy and sell with people on your campus";
 const siteDescription =
   "A campus marketplace for verified students. No shipping, no fees — just students down the hall.";
 
@@ -40,7 +40,7 @@ export const metadata: Metadata = {
     title: siteTitle,
     description: siteDescription,
     url: siteUrl,
-    siteName: "Corkboard",
+    siteName: "Snaggboard",
     type: "website",
   },
   // Twitter/X uses its own tags; "summary_large_image" shows the big card.

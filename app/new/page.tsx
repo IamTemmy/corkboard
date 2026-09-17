@@ -6,7 +6,7 @@ import { NewListingForm } from "@/components/site/new-listing-form";
 import { createClient } from "@/lib/supabase/server";
 
 export const metadata: Metadata = {
-  title: "List an item — Corkboard",
+  title: "List an item — Snaggboard",
 };
 
 export const dynamic = "force-dynamic";

@@ -1,7 +1,7 @@
 // Rules for a student's chosen display name.
 //
 // A display name may not impersonate a campus office or official ("Campus
-// Police", "JSU Housing", "Corkboard Admin"…). Verification only proves the
+// Police", "JSU Housing", "Snaggboard Admin"…). Verification only proves the
 // person controls an approved campus email — NOT their identity, and NOT any
 // school endorsement (see docs/decisions.md → "Identity" and "Positioning").
 // A name that borrows institutional authority is exactly the social-engineering
@@ -17,6 +17,7 @@ export const MAX_DISPLAY_NAME = 30;
 // Whole-word / phrase terms that read as an official campus entity.
 const RESERVED_NAME_TERMS = [
   "corkboard",
+  "snaggboard",
   "jsu",
   "jackson state",
   "campus police",

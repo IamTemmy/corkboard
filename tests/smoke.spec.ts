@@ -36,7 +36,7 @@ test.describe("site health", () => {
 
     await page.goto("/how-it-works");
     await expect(
-      page.getByRole("heading", { name: /how corkboard works/i }),
+      page.getByRole("heading", { name: /how snaggboard works/i }),
     ).toBeVisible();
 
     await page.goto("/join");

@@ -2,7 +2,7 @@
 
 import { useEffect, useRef, type ReactNode } from "react";
 
-// A reusable Corkboard-styled modal shell: dimmed backdrop, centered paper card,
+// A reusable Snaggboard-styled modal shell: dimmed backdrop, centered paper card,
 // Escape + backdrop-click to close, focus trapped inside, page scroll locked.
 // The card content (title, body, footer) is passed as children so different
 // modals — a delete confirm, a report form — share one implementation.

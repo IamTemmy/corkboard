@@ -5,8 +5,8 @@ import { Footer } from "@/components/site/footer";
 import { HowItWorksSteps } from "@/components/site/how-it-works";
 
 export const metadata: Metadata = {
-  title: "How it works — Corkboard",
-  description: "How buying and selling on Corkboard works.",
+  title: "How it works — Snaggboard",
+  description: "How buying and selling on Snaggboard works.",
 };
 
 export default function HowItWorksPage() {
@@ -18,7 +18,7 @@ export default function HowItWorksPage() {
           Built for verified students, meeting in person
         </span>
         <h1 className="font-display mb-3 max-w-[640px] text-[34px] font-semibold leading-[1.15] tracking-[-0.01em] sm:text-[44px]">
-          How Corkboard works
+          How Snaggboard works
         </h1>
         <p className="mb-10 max-w-[560px] text-base text-ink/65">
           No shipping, no fees, no middleman — just students buying and selling

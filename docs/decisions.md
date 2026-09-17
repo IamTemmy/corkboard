@@ -1,10 +1,10 @@
-# Corkboard — Decision Log
+# Snaggboard — Decision Log
 
 Why things are the way they are. This complements `plan.md` (what to build) by recording *why* — including what was considered and rejected, so decisions don't get quietly re-litigated or accidentally undone.
 
 ---
 
-## Name: "Corkboard"
+## Name: "Snaggboard"
 
 **Provisional.** Chosen because campuses already use physical bulletin boards for exactly this, it isn't tied to one school (survives multi-campus expansion), and it's a real word people remember — unlike the placeholder "Campus Marketplace."
 
@@ -56,7 +56,7 @@ Storing domains in a table rather than hardcoding them is what makes expansion a
 
 *(Added 2026-08-07, after auth shipped — an example of the docs being living: this refines the original plan now that real accounts exist.)*
 
-A student's identity on Corkboard is a **display name they choose**, not their login. Internally we always have the Supabase user id + verified email; the display name is presentation only.
+A student's identity on Snaggboard is a **display name they choose**, not their login. Internally we always have the Supabase user id + verified email; the display name is presentation only.
 
 - The **J-number** (the email local part, e.g. `j00931199`) is a semi-private student ID. It's fine as a private greeting, but must **never** be shown publicly as a seller — so a new profile's `display_name` starts NULL, and the `/welcome` step (shown once after first verification) asks the student how they want to appear.
 - A **preferred first name is recommended, not required** — it makes the marketplace friendlier and more trustworthy. A student who'd rather not can pick "use my J-number" (a real JSU identity, not "anonymous"). Changeable later.
@@ -136,7 +136,7 @@ listings seller-only/404 for the public.
 
 ## Listing detail page — layout & colour system
 
-*(Added 2026-08-11, after a focused design pass on the listing-detail page — Corkboard's most important screen, where browsing turns into contacting another student. It should be the most polished page in the product.)*
+*(Added 2026-08-11, after a focused design pass on the listing-detail page — Snaggboard's most important screen, where browsing turns into contacting another student. It should be the most polished page in the product.)*
 
 **Three-section right column.** The details column beside the photo is organised as:
 1. **Header** — category · condition, title, price · posted date.

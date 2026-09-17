@@ -7,7 +7,7 @@ import { createClient } from "@/lib/supabase/server";
 import { getListingById } from "@/lib/queries";
 
 export const metadata: Metadata = {
-  title: "Edit listing — Corkboard",
+  title: "Edit listing — Snaggboard",
 };
 
 export const dynamic = "force-dynamic";

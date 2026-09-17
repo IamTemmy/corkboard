@@ -7,7 +7,7 @@ import { createClient } from "@/lib/supabase/server";
 import { jnumberOf } from "@/lib/identity";
 
 export const metadata: Metadata = {
-  title: "Settings — Corkboard",
+  title: "Settings — Snaggboard",
 };
 
 export const dynamic = "force-dynamic";

@@ -145,7 +145,7 @@ export function ReportListing({
             Report this listing
           </h2>
           <p className="mt-1.5 text-sm leading-relaxed text-ink/65">
-            Help us keep Corkboard safe. Reports are private — the seller
+            Help us keep Snaggboard safe. Reports are private — the seller
             isn&apos;t told who reported them.
           </p>
 
@@ -222,7 +222,7 @@ export function ReportListing({
                 strokeLinejoin="round"
               />
             </svg>
-            Report submitted — thanks for helping keep Corkboard safe.
+            Report submitted — thanks for helping keep Snaggboard safe.
           </div>
         </div>
       )}

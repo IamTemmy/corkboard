@@ -9,9 +9,9 @@ import {
 } from "@/lib/guidelines";
 
 export const metadata: Metadata = {
-  title: "Community guidelines — Corkboard",
+  title: "Community guidelines — Snaggboard",
   description:
-    "What you can and can't sell on Corkboard, and how to buy and sell safely on campus.",
+    "What you can and can't sell on Snaggboard, and how to buy and sell safely on campus.",
 };
 
 // A titled list of rules — reused for both the prohibited items and the
@@ -50,13 +50,13 @@ export default function GuidelinesPage() {
       <Nav />
       <main className="mx-auto w-full max-w-5xl px-6 py-14 sm:px-12">
         <span className="mb-6 inline-block rounded-full bg-moss/12 px-3.5 py-1.5 text-xs font-medium text-moss-text">
-          Keeping Corkboard safe and useful
+          Keeping Snaggboard safe and useful
         </span>
         <h1 className="font-display mb-3 max-w-[640px] text-[34px] font-semibold leading-[1.15] tracking-[-0.01em] sm:text-[44px]">
           Community guidelines
         </h1>
         <p className="mb-12 max-w-[600px] text-base text-ink/65">
-          Corkboard is a marketplace for verified students meeting in person on
+          Snaggboard is a marketplace for verified students meeting in person on
           campus. A few simple rules keep it that way. By posting a listing, you
           agree to follow these.
         </p>

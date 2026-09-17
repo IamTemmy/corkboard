@@ -25,8 +25,8 @@ export async function generateMetadata({ params }: ListingPageProps) {
   const listing = await getListingById(id);
   return {
     title: listing
-      ? `${listing.title} — Corkboard`
-      : "Listing not found — Corkboard",
+      ? `${listing.title} — Snaggboard`
+      : "Listing not found — Snaggboard",
   };
 }
 

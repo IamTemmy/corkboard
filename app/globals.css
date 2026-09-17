@@ -8,7 +8,7 @@
 @custom-variant dark (&:is(.dark *));
 
 /* ────────────────────────────────────────────────────────────────
-   Corkboard design tokens — the single source of truth for the look.
+   Snaggboard design tokens — the single source of truth for the look.
    Every value here is copied exactly from docs/mockup.html.
    Defining them in @theme turns each into a Tailwind utility, e.g.
    `bg-ink`, `text-marigold`, `border-line`.
@@ -33,7 +33,7 @@
 
 /* ────────────────────────────────────────────────────────────────
    Map shadcn's semantic tokens onto our palette, so any shadcn
-   component (Button, Input, …) speaks Corkboard automatically
+   component (Button, Input, …) speaks Snaggboard automatically
    instead of showing its default grays.
    ──────────────────────────────────────────────────────────────── */
 @theme inline {

@@ -1,4 +1,4 @@
-// Single source of truth for Corkboard's community guidelines and prohibited
+// Single source of truth for Snaggboard's community guidelines and prohibited
 // items. Both the /guidelines page and the "list an item" form read from here,
 // so the rules shown at listing time can never drift from the full policy.
 //
@@ -76,7 +76,7 @@ export const COMMUNITY_RULES: ProhibitedItem[] = [
   {
     title: "It's cash in person, no shipping",
     detail:
-      "Corkboard has no payments or shipping. Never send money before you have the item in hand.",
+      "Snaggboard has no payments or shipping. Never send money before you have the item in hand.",
   },
   {
     title: "Treat people with respect",

@@ -175,7 +175,7 @@ export function ContactSeller({
           Sign in to contact {seller}
         </Link>
         <p className="mt-3 max-w-md text-xs text-ink/55">
-          Corkboard only shows a seller&apos;s contact details to verified
+          Snaggboard only shows a seller&apos;s contact details to verified
           students. Sign in with your school email to reach {seller} and agree on
           a time — then meet at the campus spot above. It&apos;s fine to bring a
           friend.

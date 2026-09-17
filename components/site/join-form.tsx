@@ -160,7 +160,7 @@ export function JoinForm() {
       )}
 
       <p className="mt-8 text-xs leading-relaxed text-ink/50">
-        Corkboard is an independent student project, not operated or endorsed by
+        Snaggboard is an independent student project, not operated or endorsed by
         the university. Verifying a school email confirms you can receive mail at
         that address — nothing more.
       </p>

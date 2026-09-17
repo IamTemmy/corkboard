@@ -451,7 +451,7 @@ export function NewListingForm({
       {/* Guidelines reminder + acknowledgment — keeps banned items off the board */}
       <div className="rounded-xl border border-line bg-paper-soft p-4">
         <p className="text-sm text-ink/70">
-          Corkboard doesn&apos;t allow weapons, drugs, alcohol, stolen or
+          Snaggboard doesn&apos;t allow weapons, drugs, alcohol, stolen or
           counterfeit goods, and a few other things. Take a moment to skim the{" "}
           <Link
             href="/guidelines"

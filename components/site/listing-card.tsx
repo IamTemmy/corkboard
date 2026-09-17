@@ -13,7 +13,7 @@ export function ListingCard({ listing }: { listing: Listing }) {
       className="group block rounded-[14px] focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-marigold"
     >
       <article className="relative overflow-hidden rounded-[14px] border border-line bg-paper-soft shadow-[0_1px_2px_rgba(28,36,48,0.04)] transition-all duration-150 group-hover:-translate-y-0.5 group-hover:shadow-[0_8px_24px_rgba(28,36,48,0.10)]">
-        {/* The pin — Corkboard's signature detail: a brick disc with a paper dot */}
+        {/* The pin — Snaggboard's signature detail: a brick disc with a paper dot */}
         <span className="absolute left-3 top-3 z-10 flex size-[22px] items-center justify-center rounded-full bg-brick shadow-[0_2px_4px_rgba(0,0,0,0.2)]">
           <span className="size-1.5 rounded-full bg-paper-soft" />
         </span>

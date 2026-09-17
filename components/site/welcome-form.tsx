@@ -52,7 +52,7 @@ export function WelcomeForm({
       <span className="mb-6 block size-3 rounded-[3px] bg-brick" aria-hidden="true" />
 
       <h1 className="font-display mb-2 text-[30px] font-semibold leading-tight tracking-[-0.01em]">
-        Welcome to Corkboard
+        Welcome to Snaggboard
       </h1>
       <p className="mb-7 text-[15px] text-ink/65">
         How would you like buyers and sellers to see you?

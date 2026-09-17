@@ -2,9 +2,9 @@ import { ImageResponse } from "next/og";
 
 // This file is a Next.js convention: it auto-generates the link-preview image
 // (1200×630) shown when the site is shared on iMessage, WhatsApp, X, etc.
-// It's drawn with the Corkboard palette so the card is on-brand.
+// It's drawn with the Snaggboard palette so the card is on-brand.
 
-export const alt = "Corkboard — buy and sell with people on your campus";
+export const alt = "Snaggboard — buy and sell with people on your campus";
 export const size = { width: 1200, height: 630 };
 export const contentType = "image/png";
 
@@ -48,7 +48,7 @@ export default function OpengraphImage() {
 
         {/* Wordmark */}
         <div style={{ display: "flex", fontSize: 92, fontWeight: 700, letterSpacing: "-2px" }}>
-          <span style={{ color: "#1C2430" }}>cork</span>
+          <span style={{ color: "#1C2430" }}>snagg</span>
           <span style={{ color: "#E7A93B" }}>board</span>
         </div>
 

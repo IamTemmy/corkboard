@@ -27,7 +27,7 @@ Authentication → Emails → **SMTP Settings** → Enable custom SMTP:
 | Username     | `resend`                               |
 | Password     | *Resend API key* (never commit it)     |
 | Sender email | `onboarding@resend.dev` (sandbox)      |
-| Sender name  | `Corkboard`                            |
+| Sender name  | `Snaggboard`                            |
 
 **Free-tier limit:** the `onboarding@resend.dev` sandbox sender only delivers to
 the email the Resend account was created with. To email *any* student (i.e. real
@@ -45,7 +45,7 @@ Authentication → Emails → **Magic Link / OTP** template ("Your sign-in link"
 **Source** → paste the body below. `{{ .Token }}` renders the 6-digit code.
 
 ```html
-<h2>Sign in to Corkboard</h2>
+<h2>Sign in to Snaggboard</h2>
 <p>Enter this 6-digit code to finish signing in:</p>
 <p style="font-size:32px;font-weight:700;letter-spacing:6px;margin:16px 0;">
   {{ .Token }}

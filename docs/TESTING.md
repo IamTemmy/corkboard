@@ -1,4 +1,4 @@
-# Corkboard — test log
+# Snaggboard — test log
 
 How we verify the app. A Playwright smoke suite runs in CI on every push
 (`npm run test:e2e`); the checks below are the manual ones on top of it. Keep

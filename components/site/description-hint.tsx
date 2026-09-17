@@ -2,7 +2,7 @@ import { CATEGORY_LISTING_TIPS } from "@/lib/listings";
 
 // A one-line "Buyers usually want to know: Size · Brand · Condition" nudge shown
 // under the Description field once a category is chosen. Guidance only — no
-// inputs, nothing required. Corkboard guides sellers toward good listings
+// inputs, nothing required. Snaggboard guides sellers toward good listings
 // instead of policing them into filling out forms.
 export function DescriptionHint({ category }: { category: string }) {
   const tip = CATEGORY_LISTING_TIPS[category];

@@ -26,13 +26,16 @@ Authentication → Emails → **SMTP Settings** → Enable custom SMTP:
 | Port         | `465` (fallback `587`)                 |
 | Username     | `resend`                               |
 | Password     | *Resend API key* (never commit it)     |
-| Sender email | `onboarding@resend.dev` (sandbox)      |
+| Sender email | `no-reply@snaggboard.com`               |
 | Sender name  | `Snaggboard`                            |
 
-**Free-tier limit:** the `onboarding@resend.dev` sandbox sender only delivers to
-the email the Resend account was created with. To email *any* student (i.e. real
-launch), verify a domain you own in Resend and change Sender email to an address
-at that domain.
+**Sending domain (LIVE):** `snaggboard.com` is verified in Resend (DKIM/SPF/DMARC
+records live in Porkbun DNS), so auth codes deliver to **any** student. Sender is
+`no-reply@snaggboard.com`.
+
+_History: before the domain was verified, Resend's `onboarding@resend.dev` sandbox
+sender only delivered to the Resend account owner's email — that was the pre-launch
+state, now resolved._
 
 ## 3. Email OTP length
 

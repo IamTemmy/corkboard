@@ -12,8 +12,9 @@ hand something over. Built first for Jackson State University (JSU).
 ## How it works
 
 1. **Sign in with a school email.** Sign-up is a passwordless 6-digit code; the
-   first verification creates the account. Only approved `.edu` domains are
-   allowed, so everyone on the board is a real student.
+   first verification creates the account. Only approved school email domains
+   are allowed (currently JSU's `students.jsums.edu`), so everyone on the board
+   is a real student.
 2. **Browse or list.** Post an item in under a minute with photos, a price, a
    category, and an on-campus meetup spot.
 3. **Meet and swap.** A verified buyer sees the seller's contact (Instagram /
